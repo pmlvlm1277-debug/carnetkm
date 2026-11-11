@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CarnetKM – Registre de kilométrage pour livreurs et travailleurs autonomes</title>
+<meta name="description" content="Registre de kilométrage et de dépenses d'auto pour livreurs, chauffeurs et travailleurs autonomes au Québec et au Canada. Sans GPS, sans compte. Prêt pour ta déclaration et pour ton comptable.">
+<meta name="theme-color" content="#0E6B4E">
+<meta property="og:title" content="CarnetKM – Ton registre de kilométrage, prêt pour l'impôt">
+<meta property="og:description" content="Note tes trajets et tes dépenses d'auto en 10 secondes. Portion affaires et taxes récupérables calculées pour toi.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"CarnetKM","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":["fr-CA","en-CA"],"description":"Registre de kilométrage et de dépenses d'automobile pour livreurs et travailleurs autonomes au Canada.","offers":{"@type":"Offer","price":"0","priceCurrency":"CAD"}},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Qu'est-ce qu'un registre de kilométrage doit contenir?","acceptedAnswer":{"@type":"Answer","text":"Pour chaque déplacement d'affaires : la date, la destination, le but du déplacement et le nombre de kilomètres parcourus. Il faut aussi noter l'odomètre du véhicule au début et à la fin de l'année pour connaître le kilométrage total."}},
+{"@type":"Question","name":"Un travailleur autonome peut-il déduire 0,73 $ du kilomètre?","acceptedAnswer":{"@type":"Answer","text":"Non. Ce taux sert aux allocations versées par un employeur à ses employés. Un travailleur autonome déduit ses dépenses réelles de véhicule multipliées par la portion affaires : kilomètres d'affaires divisés par kilomètres totaux de l'année."}},
+{"@type":"Question","name":"Mes données sont-elles envoyées quelque part?","acceptedAnswer":{"@type":"Answer","text":"Non. Tes trajets et tes dépenses restent dans le navigateur de ton appareil. Il n'y a ni compte ni suivi GPS."}}
+]}]}
+</script>
+<style>
+:root{
+  --paper:#F2F5F3; --card:#FFFFFF; --ink:#14262B; --slate:#56676C; --line:#D5DDDA;
+  --sign:#0E6B4E; --sign-deep:#0A543D; --lane:#F4C430; --alert:#B3261E; --perso:#2B5C8A;
+  --r-sm:6px; --r-md:10px; --r-sign:18px;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-sign:"Barlow Condensed","Barlow","Arial Narrow",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.5 var(--f-body)}
+.wrap{max-width:920px;margin:0 auto;padding:0 18px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--lane);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.brand{font:700 26px/1 var(--f-sign);letter-spacing:.01em;display:flex;align-items:center;gap:9px}
+.brand svg{width:30px;height:30px}
+.lang{border:1.5px solid var(--ink);background:none;border-radius:var(--r-sm);padding:5px 11px;font-weight:600;cursor:pointer}
+
+/* the highway sign */
+.sign{background:var(--sign);color:#fff;border-radius:var(--r-sign);padding:7px;box-shadow:0 2px 0 var(--sign-deep)}
+.sign-in{border:3px solid #fff;border-radius:12px;padding:26px 24px 24px;display:grid;gap:22px;grid-template-columns:1fr}
+.sign h1{font:700 clamp(38px,8.2vw,68px)/.98 var(--f-sign);margin:0;letter-spacing:.005em;max-width:13ch}
+.sign p{margin:12px 0 0;max-width:44ch;font-size:18px;color:#E4F1EC}
+.odo-block{align-self:end}
+.odo-cap{font:600 17px/1.2 var(--f-sign);letter-spacing:.02em;margin-bottom:8px;color:#E4F1EC}
+.odo{display:inline-flex;gap:3px;background:var(--ink);padding:6px;border-radius:8px;border:2px solid #fff}
+.odo span{display:block;width:34px;height:50px;overflow:hidden;background:#0B171A;border-radius:4px;position:relative}
+.odo span i{display:block;font:600 38px/50px var(--f-sign);font-style:normal;text-align:center;color:#fff;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.odo span.tenth{background:var(--lane)}
+.odo span.tenth i{color:var(--ink)}
+.odo-sub{margin-top:9px;font-size:15.5px;color:#E4F1EC}
+@media (min-width:760px){.sign-in{grid-template-columns:1.25fr auto;padding:34px 34px 30px}.odo span{width:40px;height:58px}.odo span i{font-size:44px;line-height:58px}}
+@media (prefers-reduced-motion:reduce){.odo span i{transition:none}}
+
+/* tabs */
+.tabs{display:flex;gap:4px;margin:22px 0 0;border-bottom:2px solid var(--ink);position:sticky;top:0;background:var(--paper);z-index:5;padding-top:6px}
+.tabs button{flex:1;border:0;background:none;padding:11px 6px 10px;font:600 19px/1 var(--f-sign);letter-spacing:.02em;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;color:var(--slate)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.panel{padding:22px 0 8px}
+.panel[hidden]{display:none}
+
+h2{font:700 30px/1.1 var(--f-sign);margin:0 0 12px}
+h3{font:600 21px/1.2 var(--f-sign);margin:0 0 8px}
+.muted{color:var(--slate)}
+.small{font-size:15px}
+
+/* forms */
+.form{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:16px}
+.grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.grid .full{grid-column:1/-1}
+@media (min-width:700px){.grid.g4{grid-template-columns:1fr 1fr 1fr 1fr}.grid.g4 .half{grid-column:span 2}}
+label{display:block;font-weight:500;font-size:15px;margin-bottom:4px}
+input[type=text],input[type=number],input[type=date],select{width:100%;border:1.5px solid #A9B6B2;border-radius:var(--r-sm);padding:10px 11px;background:#fff;min-height:46px}
+input:focus,select:focus{border-color:var(--sign)}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:var(--r-sm);overflow:hidden}
+.seg label{flex:1;margin:0;text-align:center;padding:10px 6px;cursor:pointer;font-weight:600;font-size:16px}
+.seg input{position:absolute;opacity:0}
+.seg input:checked+span{color:#fff}
+.seg label:has(input:checked){background:var(--ink);color:#fff}
+.seg label:has(input:focus-visible){outline:3px solid var(--lane);outline-offset:-3px}
+.check{display:flex;gap:9px;align-items:center;font-weight:400;font-size:16px;margin:0}
+.check input{width:20px;height:20px;accent-color:var(--sign)}
+.btn{border:0;border-radius:var(--r-sm);padding:12px 18px;font-weight:600;cursor:pointer;background:var(--sign);color:#fff;min-height:46px}
+.btn:hover{background:var(--sign-deep)}
+.btn.alt{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.alt:hover{background:#E9EEEC}
+.btn.lane{background:var(--lane);color:var(--ink)}
+.btn.lane:hover{background:#E6B520}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+details.more{margin-top:2px}
+details.more summary{cursor:pointer;font-weight:500;font-size:15.5px;color:var(--sign-deep);padding:4px 0}
+.msg{margin-top:10px;padding:10px 12px;border-radius:var(--r-sm);font-size:15.5px}
+.msg.err{background:#FBE9E7;color:var(--alert);border:1px solid #F0B8B2}
+.msg.ok{background:#E3F2EC;color:var(--sign-deep);border:1px solid #B5D9CB}
+.msg.warn{background:#FFF6D6;color:#5C4700;border:1px solid #EBD688}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.chip{border:1.5px solid var(--sign);color:var(--sign-deep);background:#fff;border-radius:999px;padding:6px 12px;font-size:15px;font-weight:500;cursor:pointer}
+.chip:hover{background:#E3F2EC}
+
+/* lists */
+.month{margin-top:22px}
+.month-h{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px solid var(--ink);padding-bottom:4px}
+.month-h b{font:600 21px/1.2 var(--f-sign);text-transform:capitalize}
+.item{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}
+.item .d{font:600 17px/1.3 var(--f-sign);color:var(--slate)}
+.item .t{font-weight:500;overflow-wrap:anywhere}
+.item .s{font-size:15px;color:var(--slate);overflow-wrap:anywhere}
+.item .v{text-align:right;font:600 20px/1.2 var(--f-sign);white-space:nowrap}
+.tag{display:inline-block;font-size:13px;font-weight:600;border-radius:4px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.tag.p{background:#E1ECF6;color:var(--perso)}
+.del{border:0;background:none;color:var(--slate);cursor:pointer;font-size:14px;text-decoration:underline;padding:2px 0;display:block;margin-left:auto}
+.del:hover{color:var(--alert)}
+.empty{padding:26px 0;color:var(--slate)}
+
+/* summary */
+.sum{display:grid;gap:0;border:1.5px solid var(--ink);border-radius:var(--r-md);overflow:hidden;background:#fff;margin-top:14px}
+.sum div{display:flex;justify-content:space-between;gap:14px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.sum div:last-child{border-bottom:0}
+.sum div.big{background:var(--ink);color:#fff}
+.sum b{font:600 21px/1.2 var(--f-sign);white-space:nowrap}
+.sum div.big b{font-size:26px;color:var(--lane)}
+.yearbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.yearbar>div{flex:1;min-width:130px}
+
+/* pro */
+.plans{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:700px){.plans{grid-template-columns:1fr 1fr}}
+.plan{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px}
+.plan.pro{border:2px solid var(--ink)}
+.plan .price{font:700 40px/1 var(--f-sign);margin:6px 0 10px}
+.plan .price small{font:500 17px var(--f-body);color:var(--slate)}
+.plan ul{margin:0 0 14px;padding-left:20px}
+.plan li{margin:4px 0}
+.badge{display:inline-block;background:var(--lane);color:var(--ink);font-weight:600;font-size:14px;border-radius:4px;padding:2px 8px}
+
+/* faq */
+.faq{margin-top:34px;padding-top:26px;border-top:2px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--line);padding:12px 0}
+.faq summary{cursor:pointer;font:600 21px/1.25 var(--f-sign)}
+.faq details p{margin:8px 0 2px;max-width:68ch}
+footer{margin:34px 0 0;padding:20px 0 40px;font-size:15px;color:var(--slate);border-top:1px solid var(--line)}
+footer p{margin:0 0 6px;max-width:75ch}
+
+/* print register */
+#print{display:none}
+@media print{
+  body{background:#fff;font-size:11pt}
+  body>*:not(#print){display:none!important}
+  #print{display:block;padding:0}
+  #print h1{font:700 20pt var(--f-sign);margin:0 0 4pt}
+  #print table{width:100%;border-collapse:collapse;margin-top:10pt;font-size:9.5pt}
+  #print th,#print td{border:1px solid #777;padding:3pt 5pt;text-align:left;vertical-align:top}
+  #print th{background:#eee}
+  #print td.n,#print th.n{text-align:right;white-space:nowrap}
+  #print .meta{display:grid;grid-template-columns:1fr 1fr;gap:2pt 20pt;font-size:10pt;margin-top:6pt}
+  #print .foot{margin-top:10pt;font-size:8.5pt;color:#444}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7" fill="#0E6B4E"/><rect x="4" y="4" width="24" height="24" rx="4.5" fill="none" stroke="#fff" stroke-width="2"/><path d="M16 8v4M16 15v4M16 22v3" stroke="#F4C430" stroke-width="2.6" stroke-linecap="round"/></svg>
+    CarnetKM
+  </div>
+  <button class="lang" id="langBtn" type="button" aria-label="Switch to English">EN</button>
+</header>
+
+<section class="sign" aria-labelledby="h1">
+  <div class="sign-in">
+    <div>
+      <h1 id="h1" data-i="hero_h"></h1>
+      <p data-i="hero_p"></p>
+    </div>
+    <div class="odo-block">
+      <div class="odo-cap" id="odoCap"></div>
+      <div class="odo" id="odo" role="img" aria-label=""></div>
+      <div class="odo-sub" id="odoSub"></div>
+    </div>
+  </div>
+</section>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" id="t-trips" aria-controls="p-trips" aria-selected="true" data-tab="trips" data-i="tab_trips"></button>
+  <button role="tab" id="t-exp" aria-controls="p-exp" aria-selected="false" data-tab="exp" data-i="tab_exp"></button>
+  <button role="tab" id="t-sum" aria-controls="p-sum" aria-selected="false" data-tab="sum" data-i="tab_sum"></button>
+  <button role="tab" id="t-pro" aria-controls="p-pro" aria-selected="false" data-tab="pro" data-i="tab_pro"></button>
+</nav>
+
+<main>
+<!-- TRIPS -->
+<section class="panel" id="p-trips" role="tabpanel" aria-labelledby="t-trips">
+  <h2 data-i="trips_h"></h2>
+  <div class="chips" id="favs"></div>
+  <form class="form" id="tripForm" novalidate>
+    <div class="grid g4">
+      <div><label for="tDate" data-i="f_date"></label><input type="date" id="tDate" required></div>
+      <div>
+        <span class="sr" id="tTypeL" data-i="f_type"></span>
+        <label aria-hidden="true" data-i="f_type"></label>
+        <div class="seg" role="radiogroup" aria-labelledby="tTypeL">
+          <label><input type="radio" name="tType" value="b" checked><span data-i="type_b"></span></label>
+          <label><input type="radio" name="tType" value="p"><span data-i="type_p"></span></label>
+        </div>
+      </div>
+      <div class="half"><label for="tPurpose" data-i="f_purpose"></label><input type="text" id="tPurpose" list="purposes" maxlength="80" autocomplete="off"><datalist id="purposes"></datalist></div>
+      <div class="half"><label for="tFrom" data-i="f_from"></label><input type="text" id="tFrom" maxlength="80" autocomplete="off"></div>
+      <div class="half"><label for="tTo" data-i="f_to"></label><input type="text" id="tTo" maxlength="80" autocomplete="off"></div>
+      <div><label for="tKm" data-i="f_km"></label><input type="number" id="tKm" inputmode="decimal" min="0" step="0.1"></div>
+      <div class="full">
+        <details class="more"><summary data-i="odo_more"></summary>
+          <div class="grid" style="margin-top:8px">
+            <div><label for="tO1" data-i="f_o1"></label><input type="number" id="tO1" inputmode="numeric" min="0" step="1"></div>
+            <div><label for="tO2" data-i="f_o2"></label><input type="number" id="tO2" inputmode="numeric" min="0" step="1"></div>
+          </div>
+        </details>
+      </div>
+      <div class="full"><label class="check"><input type="checkbox" id="tFav"><span data-i="f_fav"></span></label></div>
+      <div class="full row"><button class="btn" type="submit" data-i="add_trip"></button></div>
+    </div>
+    <div id="tripMsg" role="status"></div>
+  </form>
+  <div id="tripList"></div>
+</section>
+
+<!-- EXPENSES -->
+<section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp" hidden>
+  <h2 data-i="exp_h"></h2>
+  <form class="form" id="expForm" novalidate>
+    <div class="grid g4">
+      <div><label for="eDate" data-i="f_date"></label><input type="date" id="eDate" required></div>
+      <div class="half"><label for="eCat" data-i="f_cat"></label><select id="eCat"></select></div>
+      <div><label for="eAmt" data-i="f_amt"></label><input type="number" id="eAmt" inputmode="decimal" min="0" step="0.01"></div>
+      <div class="full"><label for="eNote" data-i="f_note"></label><input type="text" id="eNote" maxlength="80" autocomplete="off"></div>
+      <div class="full"><label class="check"><input type="checkbox" id="eTax"><span data-i="f_tax"></span></label></div>
+      <div class="full row"><button class="btn" type="submit" data-i="add_exp"></button><span class="muted small" id="eHint"></span></div>
+    </div>
+    <div id="expMsg" role="status"></div>
+  </form>
+  <div id="expList"></div>
+</section>
+
+<!-- SUMMARY -->
+<section class="panel" id="p-sum" role="tabpanel" aria-labelledby="t-sum" hidden>
+  <h2 data-i="sum_h"></h2>
+  <div class="form">
+    <div class="yearbar">
+      <div><label for="sYear" data-i="f_year"></label><select id="sYear"></select></div>
+      <div><label for="sO1" data-i="f_yo1"></label><input type="number" id="sO1" inputmode="numeric" min="0" step="1"></div>
+      <div><label for="sO2" data-i="f_yo2"></label><input type="number" id="sO2" inputmode="numeric" min="0" step="1"></div>
+    </div>
+    <div class="grid">
+      <div><label for="sName" data-i="f_name"></label><input type="text" id="sName" maxlength="60" autocomplete="name"></div>
+      <div><label for="sVeh" data-i="f_veh"></label><input type="text" id="sVeh" maxlength="60" autocomplete="off"></div>
+      <div><label for="sProv" data-i="f_prov"></label><select id="sProv"></select></div>
+      <div style="align-self:end"><label class="check" style="min-height:46px"><input type="checkbox" id="sReg"><span data-i="f_reg"></span></label></div>
+    </div>
+  </div>
+  <div id="sumWarn"></div>
+  <div class="sum" id="sumBox"></div>
+  <p class="muted small" data-i="sum_note" style="max-width:75ch"></p>
+  <div class="row" style="margin-top:6px">
+    <button class="btn" type="button" id="bPrint" data-i="b_print"></button>
+    <button class="btn alt" type="button" id="bCsvT" data-i="b_csvt"></button>
+    <button class="btn alt" type="button" id="bCsvE" data-i="b_csve"></button>
+  </div>
+  <div id="expMsg2" role="status"></div>
+</section>
+
+<!-- PRO -->
+<section class="panel" id="p-pro" role="tabpanel" aria-labelledby="t-pro" hidden>
+  <h2 data-i="pro_h"></h2>
+  <div id="proState"></div>
+  <div class="plans">
+    <div class="plan">
+      <h3 data-i="free_t"></h3>
+      <div class="price">0 $</div>
+      <ul id="freeList"></ul>
+    </div>
+    <div class="plan pro">
+      <h3>Pro</h3>
+      <div class="price"><span id="proPrice"></span> <small data-i="per_month"></small></div>
+      <ul id="proList"></ul>
+      <div id="buyBox"></div>
+    </div>
+  </div>
+  <div class="form" style="margin-top:16px" id="licBox">
+    <h3 data-i="lic_h"></h3>
+    <div class="row">
+      <div style="flex:1;min-width:220px"><label for="licKey" data-i="lic_l"></label><input type="text" id="licKey" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"></div>
+      <button class="btn" type="button" id="bLic" data-i="lic_b" style="align-self:end"></button>
+    </div>
+    <div id="licMsg" role="status"></div>
+  </div>
+  <div class="form" style="margin-top:16px">
+    <h3 data-i="bk_h"></h3>
+    <p class="muted small" data-i="bk_p" style="margin:0 0 10px"></p>
+    <div class="row">
+      <button class="btn alt" type="button" id="bBackup" data-i="bk_save"></button>
+      <button class="btn alt" type="button" id="bRestore" data-i="bk_load"></button>
+      <input type="file" id="fRestore" accept="application/json,.json" hidden>
+    </div>
+    <div id="bkMsg" role="status"></div>
+  </div>
+</section>
+</main>
+
+<section class="faq" aria-labelledby="faqH">
+  <h2 id="faqH" data-i="faq_h"></h2>
+  <div id="faqList"></div>
+</section>
+
+<footer>
+  <p data-i="foot_1"></p>
+  <p data-i="foot_2"></p>
+  <p>© <span id="yr"></span> CarnetKM. <span data-i="foot_3"></span></p>
+</footer>
+</div>
+
+<div id="print"></div>
+
+<script>
+/* ============================================================
+   CONFIG – les 3 seules valeurs à remplir pour brancher le paiement
+   ============================================================ */
+const CONFIG = {
+  gumroadProductId: "",   // ID du produit Gumroad (onglet « Content » ou « Advanced » du produit)
+  gumroadUrl: "",         // lien d'achat, ex. https://sharplaughs.gumroad.com/l/carnetkm
+  price: { fr: "4,99 $", en: "$4.99" },
+  freeTripsPerMonth: 25
+};
+
+/* ---------- i18n ---------- */
+const T = {
+fr:{
+ hero_h:"Ton registre de kilométrage, prêt pour l'impôt",
+ hero_p:"Note tes trajets et tes dépenses d'auto en dix secondes. CarnetKM calcule ta portion affaires et te sort un registre propre pour ta déclaration ou ton comptable.",
+ odo_cap:"Kilomètres d'affaires en {y}", odo_sub_none:"Ajoute un premier trajet pour partir le compteur.", odo_sub:"{n} trajets, portion affaires {p}",
+ tab_trips:"Trajets", tab_exp:"Dépenses", tab_sum:"Sommaire", tab_pro:"Pro",
+ trips_h:"Ajouter un trajet", f_date:"Date", f_type:"Type", type_b:"Affaires", type_p:"Perso",
+ f_purpose:"But du déplacement", f_from:"Départ", f_to:"Destination", f_km:"Kilomètres",
+ odo_more:"Calculer avec l'odomètre", f_o1:"Odomètre au départ", f_o2:"Odomètre à l'arrivée",
+ f_fav:"Garder comme trajet fréquent", add_trip:"Ajouter le trajet",
+ purposes:["Livraison Uber Eats","Livraison DoorDash","Livraison Skip","Livraison de colis","Route de livraison","Transport de passagers","Rencontre client","Achat de fournitures","Banque ou comptable"],
+ err_date:"Choisis une date.", err_km:"Entre les kilomètres, ou l'odomètre au départ et à l'arrivée.", err_odo:"L'odomètre à l'arrivée doit être plus grand qu'au départ.", err_dest:"Entre la destination : c'est exigé dans un registre de déplacements d'affaires.", err_purpose:"Entre le but du déplacement : c'est exigé dans un registre de déplacements d'affaires.",
+ trip_added:"Trajet ajouté.", limit:"Tu as atteint {n} trajets ce mois-ci, la limite de la version gratuite. Passe à Pro pour continuer sans limite.",
+ no_trips:"Aucun trajet pour l'instant. Ajoute celui d'aujourd'hui pour commencer ton registre.", del:"Supprimer", del_sure:"Confirmer la suppression",
+ biz:"affaires", perso:"Perso", km:"km",
+ exp_h:"Ajouter une dépense", f_cat:"Catégorie", f_amt:"Montant payé ($)", f_note:"Note (facultatif)", f_tax:"Le montant inclut les taxes de vente", add_exp:"Ajouter la dépense",
+ hint_pro:"Comptée selon ta portion affaires.", hint_full:"Comptée à 100 % : dépense d'affaires seulement.",
+ err_amt:"Entre un montant plus grand que zéro.", exp_added:"Dépense ajoutée.", no_exp:"Aucune dépense pour l'instant. Garde aussi tes reçus : il faut les conserver six ans.",
+ cats:{fuel:"Essence ou recharge",maint:"Entretien et réparations",ins:"Assurance",plate:"Immatriculation et permis",lease:"Location du véhicule",interest:"Intérêts sur le prêt auto",wash:"Lavage",othv:"Autre frais du véhicule",park:"Stationnement et péages (affaires)",phone:"Cellulaire (part affaires)",gear:"Équipement de livraison",fees:"Frais de plateforme",othb:"Autre dépense d'affaires"},
+ sum_h:"Sommaire de l'année", f_year:"Année", f_yo1:"Odomètre au 1er janvier", f_yo2:"Odomètre au 31 décembre", f_name:"Ton nom (pour le registre)", f_veh:"Véhicule", f_prov:"Province", f_reg:"Je suis inscrit aux taxes de vente",
+ s_biz:"Kilomètres d'affaires", s_tot:"Kilomètres totaux de l'année", s_tot_est:"Kilomètres totaux (trajets notés)", s_pct:"Portion affaires", s_veh:"Frais du véhicule", s_vehd:"Frais du véhicule déductibles", s_full:"Autres dépenses d'affaires", s_tax:"Taxes de vente récupérables (estimation)", s_gst:"dont TPS", s_qst:"dont TVQ", s_ded:"Dépenses déductibles estimées",
+ warn_odo:"Entre ton odomètre au début et à la fin de l'année pour une portion affaires exacte. En attendant, le calcul utilise seulement les trajets notés.", warn_odo_bad:"L'odomètre de fin d'année est plus petit que celui du début. Vérifie les deux chiffres.", warn_over:"Tes kilomètres d'affaires dépassent le total de l'odomètre. Vérifie tes entrées.",
+ sum_note:"Estimation pour t'aider à préparer ta déclaration. L'amortissement du véhicule (DPA) et les plafonds sur la location et les intérêts ne sont pas calculés ici. Valide les montants avec ton comptable.",
+ b_print:"Imprimer le registre (PDF)", b_csvt:"Exporter les trajets (CSV)", b_csve:"Exporter les dépenses (CSV)", pro_only:"L'export fait partie de Pro. Va dans l'onglet Pro pour l'activer.",
+ pro_h:"Gratuit ou Pro", free_t:"Gratuit", per_month:"par mois",
+ free_list:["{n} trajets par mois","Dépenses illimitées","Sommaire de l'année à l'écran","Sauvegarde de tes données"],
+ pro_list:["Trajets illimités","Registre imprimable en PDF","Export CSV pour ton comptable","Trajets fréquents en un clic","Taxes récupérables détaillées"],
+ buy:"S'abonner à Pro", launch:"Accès de lancement : toutes les fonctions Pro sont ouvertes pendant que l'abonnement se met en place.", pro_on:"Pro est actif sur cet appareil. Merci!", pro_off:"Tu utilises la version gratuite.",
+ lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer Pro", lic_checking:"Vérification…", lic_ok:"Pro est activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour réactiver Pro.", lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
+ bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
+ faq_h:"Questions fréquentes",
+ faq:[
+  ["Qu'est-ce qu'un registre de kilométrage doit contenir?","Pour chaque déplacement d'affaires : la date, la destination, le but du déplacement et le nombre de kilomètres parcourus. Note aussi l'odomètre de ton véhicule au début et à la fin de l'année, pour connaître ton kilométrage total. CarnetKM te demande exactement ces renseignements."],
+  ["Je suis travailleur autonome. Est-ce que je peux déduire 0,73 $ du kilomètre?","Non. Ce taux (0,73 $ pour les 5 000 premiers kilomètres en 2026, puis 0,67 $) sert aux allocations qu'un employeur verse à ses employés. Un travailleur autonome déduit ses dépenses réelles de véhicule, multipliées par sa portion affaires : kilomètres d'affaires divisés par kilomètres totaux de l'année."],
+  ["Est-ce que le trajet entre la maison et le travail compte?","En général, non : aller de chez toi à ton lieu de travail habituel est un déplacement personnel. Si ton domicile est ton lieu d'affaires principal, les déplacements vers tes clients ou tes livraisons sont des déplacements d'affaires. En cas de doute, demande à ton comptable."],
+  ["Pourquoi il n'y a pas de suivi GPS?","Parce que tu n'en as pas besoin pour avoir un registre valable, et qu'un GPS qui roule en arrière-plan vide ta batterie et te suit partout. Ici, tu notes ta route à la fin de ta journée : odomètre au départ, odomètre à l'arrivée, c'est réglé."],
+  ["Où sont gardées mes données?","Dans le navigateur de ton appareil, nulle part ailleurs. Il n'y a pas de compte à créer. Utilise le bouton de sauvegarde dans l'onglet Pro pour garder une copie."],
+  ["Combien de temps dois-je garder mon registre et mes reçus?","Six ans après la fin de l'année d'imposition visée. Exporte ton registre en PDF à la fin de chaque année et range-le avec tes reçus."]
+ ],
+ foot_1:"CarnetKM est un outil d'aide à la tenue de registre. Il ne remplace pas les conseils d'un comptable ou d'un fiscaliste, et il n'est affilié ni à Revenu Québec ni à l'Agence du revenu du Canada.",
+ foot_2:"Limites 2026 fixées par le ministère des Finances du Canada : coût en capital de 39 000 $ pour un véhicule de tourisme, location déductible de 1 100 $ par mois, intérêts déductibles de 350 $ par mois.",
+ foot_3:"Un produit SharpLaughs.",
+ p_title:"Registre de kilométrage", p_name:"Nom", p_veh:"Véhicule", p_year:"Année", p_o1:"Odomètre au début", p_o2:"Odomètre à la fin", p_gen:"Produit avec CarnetKM le {d}. Conserver six ans avec les reçus.",
+ c_date:"Date", c_type:"Type", c_from:"Départ", c_to:"Destination", c_purpose:"But", c_km:"Km", c_o1:"Odo départ", c_o2:"Odo arrivée", c_cat:"Catégorie", c_amt:"Montant", c_taxi:"Taxes incluses", c_note:"Note", yes:"oui", no:"non",
+ provs:{QC:"Québec",ON:"Ontario",BC:"Colombie-Britannique",AB:"Alberta",MB:"Manitoba",SK:"Saskatchewan",NS:"Nouvelle-Écosse",NB:"Nouveau-Brunswick",NL:"Terre-Neuve-et-Labrador",PE:"Île-du-Prince-Édouard",TR:"Territoires"}
+},
+en:{
+ hero_h:"Your mileage logbook, ready for tax time",
+ hero_p:"Log trips and car expenses in ten seconds. CarnetKM works out your business-use share and gives you a clean logbook for your return or your accountant.",
+ odo_cap:"Business kilometres in {y}", odo_sub_none:"Add a first trip to start the counter.", odo_sub:"{n} trips, business use {p}",
+ tab_trips:"Trips", tab_exp:"Expenses", tab_sum:"Summary", tab_pro:"Pro",
+ trips_h:"Add a trip", f_date:"Date", f_type:"Type", type_b:"Business", type_p:"Personal",
+ f_purpose:"Purpose of the trip", f_from:"From", f_to:"Destination", f_km:"Kilometres",
+ odo_more:"Work it out from the odometer", f_o1:"Odometer at start", f_o2:"Odometer at end",
+ f_fav:"Keep as a frequent trip", add_trip:"Add trip",
+ purposes:["Uber Eats delivery","DoorDash delivery","Skip delivery","Parcel delivery","Delivery route","Passenger rides","Client meeting","Supplies run","Bank or accountant"],
+ err_date:"Pick a date.", err_km:"Enter the kilometres, or the odometer at start and end.", err_odo:"The end odometer must be higher than the start.", err_dest:"Enter the destination: a business logbook requires it.", err_purpose:"Enter the purpose of the trip: a business logbook requires it.",
+ trip_added:"Trip added.", limit:"You've reached {n} trips this month, the limit of the free version. Go Pro to keep logging without a limit.",
+ no_trips:"No trips yet. Add today's to start your logbook.", del:"Delete", del_sure:"Confirm delete",
+ biz:"business", perso:"Personal", km:"km",
+ exp_h:"Add an expense", f_cat:"Category", f_amt:"Amount paid ($)", f_note:"Note (optional)", f_tax:"The amount includes sales tax", add_exp:"Add expense",
+ hint_pro:"Counted at your business-use share.", hint_full:"Counted at 100%: business-only expense.",
+ err_amt:"Enter an amount greater than zero.", exp_added:"Expense added.", no_exp:"No expenses yet. Keep your receipts too: you need to hold on to them for six years.",
+ cats:{fuel:"Fuel or charging",maint:"Maintenance and repairs",ins:"Insurance",plate:"Licence and registration",lease:"Vehicle lease",interest:"Car loan interest",wash:"Car wash",othv:"Other vehicle cost",park:"Parking and tolls (business)",phone:"Cell phone (business share)",gear:"Delivery gear",fees:"Platform fees",othb:"Other business expense"},
+ sum_h:"Year summary", f_year:"Year", f_yo1:"Odometer on January 1", f_yo2:"Odometer on December 31", f_name:"Your name (for the logbook)", f_veh:"Vehicle", f_prov:"Province", f_reg:"I'm registered for sales tax",
+ s_biz:"Business kilometres", s_tot:"Total kilometres for the year", s_tot_est:"Total kilometres (logged trips)", s_pct:"Business use", s_veh:"Vehicle costs", s_vehd:"Deductible vehicle costs", s_full:"Other business expenses", s_tax:"Recoverable sales tax (estimate)", s_gst:"of which GST", s_qst:"of which QST", s_ded:"Estimated deductible expenses",
+ warn_odo:"Enter your odometer at the start and end of the year for an exact business-use share. Until then, the math uses logged trips only.", warn_odo_bad:"The year-end odometer is lower than the start. Check both numbers.", warn_over:"Your business kilometres are higher than the odometer total. Check your entries.",
+ sum_note:"An estimate to help you prepare your return. Capital cost allowance (CCA) and the caps on lease and interest costs are not calculated here. Confirm the amounts with your accountant.",
+ b_print:"Print the logbook (PDF)", b_csvt:"Export trips (CSV)", b_csve:"Export expenses (CSV)", pro_only:"Export is part of Pro. Open the Pro tab to turn it on.",
+ pro_h:"Free or Pro", free_t:"Free", per_month:"per month",
+ free_list:["{n} trips per month","Unlimited expenses","Year summary on screen","Backup of your data"],
+ pro_list:["Unlimited trips","Printable PDF logbook","CSV export for your accountant","One-tap frequent trips","Detailed recoverable tax"],
+ buy:"Subscribe to Pro", launch:"Launch access: every Pro feature is open while the subscription is being set up.", pro_on:"Pro is active on this device. Thank you!", pro_off:"You're on the free version.",
+ lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate Pro", lic_checking:"Checking…", lic_ok:"Pro is activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate Pro.", lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
+ bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
+ faq_h:"Common questions",
+ faq:[
+  ["What does a mileage logbook need to contain?","For each business trip: the date, the destination, the purpose and the number of kilometres driven. Also record your vehicle's odometer at the start and end of the year so you know your total kilometres. CarnetKM asks for exactly these details."],
+  ["I'm self-employed. Can I deduct $0.73 per kilometre?","No. That rate ($0.73 for the first 5,000 kilometres in 2026, then $0.67) is for allowances an employer pays to employees. A self-employed person deducts actual vehicle expenses multiplied by the business-use share: business kilometres divided by total kilometres for the year."],
+  ["Does driving from home to work count?","Usually not: going from home to your regular place of work is personal driving. If your home is your main place of business, trips to clients or deliveries are business trips. When in doubt, ask your accountant."],
+  ["Why is there no GPS tracking?","Because you don't need it for a valid logbook, and a GPS running in the background drains your battery and follows you everywhere. Here you log your route at the end of the day: odometer at start, odometer at end, done."],
+  ["Where is my data kept?","In your device's browser and nowhere else. There's no account to create. Use the backup button in the Pro tab to keep a copy."],
+  ["How long do I keep my logbook and receipts?","Six years after the end of the tax year they relate to. Export your logbook to PDF at the end of each year and file it with your receipts."]
+ ],
+ foot_1:"CarnetKM is a record-keeping aid. It does not replace advice from an accountant or tax professional, and it is not affiliated with Revenu Québec or the Canada Revenue Agency.",
+ foot_2:"2026 limits set by the Department of Finance Canada: $39,000 capital cost for a passenger vehicle, $1,100 per month deductible lease cost, $350 per month deductible interest.",
+ foot_3:"A SharpLaughs product.",
+ p_title:"Mileage logbook", p_name:"Name", p_veh:"Vehicle", p_year:"Year", p_o1:"Odometer at start", p_o2:"Odometer at end", p_gen:"Produced with CarnetKM on {d}. Keep for six years with your receipts.",
+ c_date:"Date", c_type:"Type", c_from:"From", c_to:"Destination", c_purpose:"Purpose", c_km:"Km", c_o1:"Odo start", c_o2:"Odo end", c_cat:"Category", c_amt:"Amount", c_taxi:"Tax included", c_note:"Note", yes:"yes", no:"no",
+ provs:{QC:"Quebec",ON:"Ontario",BC:"British Columbia",AB:"Alberta",MB:"Manitoba",SK:"Saskatchewan",NS:"Nova Scotia",NB:"New Brunswick",NL:"Newfoundland and Labrador",PE:"Prince Edward Island",TR:"Territories"}
+}};
+
+/* ---------- tax tables ----------
+   tot = taxes de vente totales sur le prix; rec = partie récupérable par un inscrit (TPS/TVH, + TVQ au Québec) */
+const PROV = {
+  QC:{tot:14.975,rec:14.975,gst:5,qst:9.975}, ON:{tot:13,rec:13}, NS:{tot:14,rec:14}, NB:{tot:15,rec:15},
+  NL:{tot:15,rec:15}, PE:{tot:15,rec:15}, BC:{tot:12,rec:5}, MB:{tot:12,rec:5}, SK:{tot:11,rec:5}, AB:{tot:5,rec:5}, TR:{tot:5,rec:5}
+};
+/* mode p = au prorata de la portion affaires; f = 100 % affaires. tax = taxes de vente habituellement incluses */
+const CATS = {
+  fuel:{m:"p",tax:1}, maint:{m:"p",tax:1}, ins:{m:"p",tax:0}, plate:{m:"p",tax:0}, lease:{m:"p",tax:1}, interest:{m:"p",tax:0},
+  wash:{m:"p",tax:1}, othv:{m:"p",tax:1}, park:{m:"f",tax:1}, phone:{m:"f",tax:1}, gear:{m:"f",tax:1}, fees:{m:"f",tax:0}, othb:{m:"f",tax:1}
+};
+
+/* ---------- state ---------- */
+const KEY = "carnetkm.v1";
+const blank = () => ({app:"carnetkm",v:1,lang:null,settings:{name:"",vehicle:"",prov:"QC",registered:false},odo:{},trips:[],expenses:[],favs:[],license:null});
+let S = blank();
+function load(){
+  try{ const raw = localStorage.getItem(KEY); if(raw){ const o = JSON.parse(raw); if(o && o.app==="carnetkm") S = Object.assign(blank(), o); } }catch(e){}
+  if(!S.lang) S.lang = (navigator.language||"fr").toLowerCase().startsWith("en") ? "en" : "fr";
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const t = (k, v) => { let s = T[S.lang][k]; if(typeof s === "string" && v) for(const x in v) s = s.replace("{"+x+"}", v[x]); return s; };
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const loc = () => S.lang === "fr" ? "fr-CA" : "en-CA";
+const nKm = n => new Intl.NumberFormat(loc(),{minimumFractionDigits:1,maximumFractionDigits:1}).format(n);
+const nMoney = n => new Intl.NumberFormat(loc(),{style:"currency",currency:"CAD"}).format(n);
+const nPct = n => new Intl.NumberFormat(loc(),{style:"percent",maximumFractionDigits:1}).format(n);
+const today = () => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const round1 = n => Math.round(n*10)/10;
+const num = v => { const n = parseFloat(String(v).replace(",",".")); return isFinite(n) ? n : null; };
+let year = new Date().getFullYear();
+
+function configured(){ return !!(CONFIG.gumroadProductId && CONFIG.gumroadUrl); }
+function licenseActive(){
+  const L = S.license; if(!L || !L.ok) return false;
+  return (Date.now() - (L.verifiedAt||0)) < 14*864e5;          // 14 jours de grâce hors ligne
+}
+function isPro(){ return !configured() || licenseActive(); }
+
+/* ---------- calculations ---------- */
+function calc(y){
+  const trips = S.trips.filter(x => x.date.slice(0,4) == y);
+  const exps = S.expenses.filter(x => x.date.slice(0,4) == y);
+  const biz = round1(trips.filter(x=>x.type==="b").reduce((a,x)=>a+x.km,0));
+  const per = round1(trips.filter(x=>x.type==="p").reduce((a,x)=>a+x.km,0));
+  const o = S.odo[y] || {};
+  const hasOdo = o.start!=null && o.end!=null;
+  const odoBad = hasOdo && o.end < o.start;
+  const odoTotal = hasOdo && !odoBad ? o.end - o.start : null;
+  const total = odoTotal!=null && odoTotal>0 ? odoTotal : round1(biz+per);
+  const over = odoTotal!=null && odoTotal>0 && biz > odoTotal;
+  const pct = total>0 ? Math.min(1, biz/total) : 0;
+  const P = PROV[S.settings.prov] || PROV.QC;
+  let veh=0, full=0, taxVeh=0, taxFull=0;
+  for(const e of exps){
+    const c = CATS[e.cat] || CATS.othb;
+    const tax = e.taxIncl ? e.amount * P.rec / (100 + P.tot) : 0;
+    if(c.m==="p"){ veh += e.amount; taxVeh += tax; } else { full += e.amount; taxFull += tax; }
+  }
+  const reg = !!S.settings.registered;
+  const taxRec = reg ? taxVeh*pct + taxFull : 0;
+  const vehDed = (veh - (reg?taxVeh:0)) * pct;
+  const fullDed = full - (reg?taxFull:0);
+  return {trips,exps,biz,per,total,pct,hasOdo,odoBad,over,odoTotal,veh,full,vehDed,fullDed,taxRec,
+          gst: P.qst ? taxRec*P.gst/P.rec : null, qst: P.qst ? taxRec*P.qst/P.rec : null, ded: vehDed+fullDed, nBiz: trips.filter(x=>x.type==="b").length};
+}
+
+/* ---------- odometer ---------- */
+function drawOdo(val){
+  const el = $("odo"); const v = Math.min(99999.9, Math.max(0, val));
+  const s = v.toFixed(1).replace(".","").padStart(6,"0");
+  if(!el.children.length){ for(let i=0;i<6;i++){ const sp=document.createElement("span"); if(i===5) sp.className="tenth"; sp.innerHTML="<i>0</i><i>0</i>"; el.appendChild(sp);} }
+  [...el.children].forEach((sp,i)=>{
+    const cur = sp.dataset.d || "0", nx = s[i];
+    if(cur===nx){ sp.firstChild.textContent = nx; return; }
+    const a = sp.children[0], b = sp.children[1];
+    a.style.transition="none"; b.style.transition="none"; a.textContent=cur; b.textContent=nx; a.style.transform="translateY(0)"; b.style.transform="translateY(0)";
+    void sp.offsetHeight; a.style.transition=""; b.style.transition="";
+    a.style.transform="translateY(-100%)"; b.style.transform="translateY(-100%)";
+    sp.dataset.d = nx;
+    setTimeout(()=>{ a.style.transition="none"; b.style.transition="none"; a.textContent=nx; a.style.transform="translateY(0)"; b.style.transform="translateY(0)"; }, 520);
+  });
+  el.setAttribute("aria-label", nKm(v)+" km");
+}
+
+/* ---------- render ---------- */
+function applyStrings(){
+  document.documentElement.lang = S.lang==="fr" ? "fr-CA" : "en-CA";
+  document.title = S.lang==="fr" ? "CarnetKM – Registre de kilométrage pour livreurs et travailleurs autonomes" : "CarnetKM – Mileage logbook for delivery drivers and the self-employed";
+  document.querySelectorAll("[data-i]").forEach(el => el.textContent = t(el.dataset.i));
+  $("langBtn").textContent = S.lang==="fr" ? "EN" : "FR";
+  $("langBtn").setAttribute("aria-label", S.lang==="fr" ? "Switch to English" : "Passer au français");
+  $("purposes").innerHTML = T[S.lang].purposes.map(p=>'<option value="'+esc(p)+'">').join("");
+  const cat = $("eCat").value;
+  $("eCat").innerHTML = Object.keys(CATS).map(k=>'<option value="'+k+'">'+esc(T[S.lang].cats[k])+'</option>').join("");
+  if(cat) $("eCat").value = cat;
+  $("sProv").innerHTML = Object.keys(PROV).map(k=>'<option value="'+k+'">'+esc(T[S.lang].provs[k])+'</option>').join("");
+  $("sProv").value = S.settings.prov;
+  $("freeList").innerHTML = T[S.lang].free_list.map(x=>"<li>"+esc(x.replace("{n}",CONFIG.freeTripsPerMonth))+"</li>").join("");
+  $("proList").innerHTML = T[S.lang].pro_list.map(x=>"<li>"+esc(x)+"</li>").join("");
+  $("proPrice").textContent = CONFIG.price[S.lang];
+  $("faqList").innerHTML = T[S.lang].faq.map(q=>"<details><summary>"+esc(q[0])+"</summary><p>"+esc(q[1])+"</p></details>").join("");
+  $("yr").textContent = new Date().getFullYear();
+}
+function monthLabel(ym){ const [y,m]=ym.split("-"); return new Date(+y,+m-1,1).toLocaleDateString(loc(),{month:"long",year:"numeric"}); }
+function dayLabel(d){ const [y,m,dd]=d.split("-"); return new Date(+y,+m-1,+dd).toLocaleDateString(loc(),{day:"numeric",month:"short"}).replace(".",""); }
+
+function renderTrips(){
+  const list = [...S.trips].sort((a,b)=> b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  if(!list.length){ $("tripList").innerHTML = '<p class="empty">'+esc(t("no_trips"))+'</p>'; }
+  else{
+    const groups = {}; list.forEach(x=>{ (groups[x.date.slice(0,7)] = groups[x.date.slice(0,7)]||[]).push(x); });
+    $("tripList").innerHTML = Object.keys(groups).sort().reverse().map(ym=>{
+      const g = groups[ym]; const b = round1(g.filter(x=>x.type==="b").reduce((a,x)=>a+x.km,0));
+      return '<div class="month"><div class="month-h"><b>'+esc(monthLabel(ym))+'</b><span class="muted">'+nKm(b)+' km '+esc(t("biz"))+'</span></div>'+
+        g.map(x=>'<div class="item"><div class="d">'+esc(dayLabel(x.date))+'</div><div><div class="t">'+
+          esc([x.from,x.to].filter(Boolean).join(" → ")||x.purpose||"—")+(x.type==="p"?'<span class="tag p">'+esc(t("perso"))+'</span>':'')+'</div>'+
+          '<div class="s">'+esc(x.purpose && (x.from||x.to) ? x.purpose : "")+(x.o1!=null&&x.o2!=null?' <span>('+x.o1+' – '+x.o2+')</span>':'')+'</div></div>'+
+          '<div><div class="v">'+nKm(x.km)+' km</div><button class="del" type="button" data-del-trip="'+x.id+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
+    }).join("");
+  }
+  const f = $("favs");
+  f.innerHTML = isPro() ? S.favs.map(x=>'<button class="chip" type="button" data-fav="'+x.id+'">'+esc((x.to||x.purpose)+", "+nKm(x.km)+" km")+'</button>').join("") : "";
+  f.style.display = f.innerHTML ? "" : "none";
+}
+function renderExp(){
+  const list = [...S.expenses].sort((a,b)=> b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  if(!list.length){ $("expList").innerHTML = '<p class="empty">'+esc(t("no_exp"))+'</p>'; return; }
+  const groups = {}; list.forEach(x=>{ (groups[x.date.slice(0,7)] = groups[x.date.slice(0,7)]||[]).push(x); });
+  $("expList").innerHTML = Object.keys(groups).sort().reverse().map(ym=>{
+    const g = groups[ym]; const s = g.reduce((a,x)=>a+x.amount,0);
+    return '<div class="month"><div class="month-h"><b>'+esc(monthLabel(ym))+'</b><span class="muted">'+nMoney(s)+'</span></div>'+
+      g.map(x=>'<div class="item"><div class="d">'+esc(dayLabel(x.date))+'</div><div><div class="t">'+esc(T[S.lang].cats[x.cat]||x.cat)+'</div><div class="s">'+esc(x.note||"")+'</div></div>'+
+        '<div><div class="v">'+nMoney(x.amount)+'</div><button class="del" type="button" data-del-exp="'+x.id+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
+  }).join("");
+}
+function renderSum(){
+  const years = new Set([new Date().getFullYear()]); S.trips.concat(S.expenses).forEach(x=>years.add(+x.date.slice(0,4)));
+  if(!years.has(year)) year = new Date().getFullYear();
+  $("sYear").innerHTML = [...years].sort((a,b)=>b-a).map(y=>'<option'+(y===year?" selected":"")+'>'+y+'</option>').join("");
+  const o = S.odo[year]||{};
+  if(document.activeElement!==$("sO1")) $("sO1").value = o.start!=null?o.start:"";
+  if(document.activeElement!==$("sO2")) $("sO2").value = o.end!=null?o.end:"";
+  if(document.activeElement!==$("sName")) $("sName").value = S.settings.name;
+  if(document.activeElement!==$("sVeh")) $("sVeh").value = S.settings.vehicle;
+  $("sReg").checked = !!S.settings.registered;
+  const c = calc(year);
+  let w = "";
+  if(c.odoBad) w = t("warn_odo_bad"); else if(c.over) w = t("warn_over"); else if(!c.hasOdo) w = t("warn_odo");
+  $("sumWarn").innerHTML = w ? '<div class="msg warn">'+esc(w)+'</div>' : "";
+  const rows = [
+    [t("s_biz"), nKm(c.biz)+" km"],
+    [c.hasOdo && !c.odoBad && c.odoTotal>0 ? t("s_tot") : t("s_tot_est"), nKm(c.total)+" km"],
+    [t("s_pct"), nPct(c.pct)],
+    [t("s_veh"), nMoney(c.veh)],
+    [t("s_vehd"), nMoney(c.vehDed)],
+    [t("s_full"), nMoney(c.fullDed)]
+  ];
+  if(S.settings.registered){
+    rows.push([t("s_tax"), nMoney(c.taxRec)]);
+    if(c.gst!=null && isPro()){ rows.push([t("s_gst"), nMoney(c.gst)]); rows.push([t("s_qst"), nMoney(c.qst)]); }
+  }
+  $("sumBox").innerHTML = rows.map(r=>'<div><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join("")+
+    '<div class="big"><span>'+esc(t("s_ded"))+'</span><b>'+esc(nMoney(c.ded))+'</b></div>';
+}
+function renderHero(){
+  const y = new Date().getFullYear(); const c = calc(y);
+  $("odoCap").textContent = t("odo_cap",{y});
+  drawOdo(c.biz);
+  $("odoSub").textContent = c.nBiz ? t("odo_sub",{n:c.nBiz,p:nPct(c.pct)}) : t("odo_sub_none");
+}
+function renderPro(){
+  let st;
+  if(!configured()) st = '<div class="msg ok">'+esc(t("launch"))+'</div>';
+  else if(licenseActive()) st = '<div class="msg ok">'+esc(t("pro_on"))+' <button class="del" type="button" id="licRm" style="display:inline;margin-left:8px">'+esc(t("lic_remove"))+'</button></div>';
+  else st = '<div class="msg warn">'+esc(t("pro_off"))+'</div>';
+  $("proState").innerHTML = st; $("proState").style.marginBottom = "14px";
+  $("buyBox").innerHTML = configured() && !licenseActive() ? '<a class="btn lane" style="display:inline-block;text-decoration:none" href="'+esc(CONFIG.gumroadUrl)+'" target="_blank" rel="noopener">'+esc(t("buy"))+'</a>' : (configured() ? "" : '<span class="badge">'+esc(S.lang==="fr"?"Bientôt":"Coming soon")+'</span>');
+  $("licBox").style.display = configured() && !licenseActive() ? "" : "none";
+}
+function renderAll(){ applyStrings(); renderTrips(); renderExp(); renderSum(); renderHero(); renderPro(); expHint(); }
+function flash(el, cls, text){ el.innerHTML = '<div class="msg '+cls+'">'+esc(text)+'</div>'; if(cls==="ok") setTimeout(()=>{ if(el.firstChild && el.firstChild.classList.contains("ok")) el.innerHTML=""; }, 3500); }
+function expHint(){ const c = CATS[$("eCat").value]; $("eHint").textContent = c ? t(c.m==="p"?"hint_pro":"hint_full") : ""; }
+
+/* ---------- actions ---------- */
+function addTrip(ev){
+  ev.preventDefault();
+  const date = $("tDate").value, type = document.querySelector('input[name=tType]:checked').value;
+  const from = $("tFrom").value.trim(), to = $("tTo").value.trim(), purpose = $("tPurpose").value.trim();
+  const o1 = num($("tO1").value), o2 = num($("tO2").value); let km = num($("tKm").value);
+  const m = $("tripMsg");
+  if(!date) return flash(m,"err",t("err_date"));
+  if(o1!=null && o2!=null){ if(o2<=o1) return flash(m,"err",t("err_odo")); if(km==null || km<=0) km = o2-o1; }
+  if(km==null || km<=0) return flash(m,"err",t("err_km"));
+  if(type==="b" && !to) return flash(m,"err",t("err_dest"));
+  if(type==="b" && !purpose) return flash(m,"err",t("err_purpose"));
+  if(!isPro()){
+    const n = S.trips.filter(x=>x.date.slice(0,7)===date.slice(0,7)).length;
+    if(n >= CONFIG.freeTripsPerMonth) return flash(m,"warn",t("limit",{n:CONFIG.freeTripsPerMonth}));
+  }
+  km = round1(km);
+  S.trips.push({id:uid(),date,type,from,to,purpose,km,o1:(o1!=null&&o2!=null)?o1:null,o2:(o1!=null&&o2!=null)?o2:null});
+  if($("tFav").checked && isPro() && !S.favs.some(f=>f.from===from&&f.to===to&&f.purpose===purpose&&f.km===km)) S.favs.push({id:uid(),from,to,purpose,km,type});
+  save();
+  ["tFrom","tTo","tPurpose","tKm","tO1","tO2"].forEach(i=>$(i).value=""); $("tFav").checked=false;
+  renderTrips(); renderSum(); renderHero(); flash(m,"ok",t("trip_added"));
+}
+function addExp(ev){
+  ev.preventDefault();
+  const date = $("eDate").value, cat = $("eCat").value, amount = num($("eAmt").value), note = $("eNote").value.trim();
+  const m = $("expMsg");
+  if(!date) return flash(m,"err",t("err_date"));
+  if(amount==null || amount<=0) return flash(m,"err",t("err_amt"));
+  S.expenses.push({id:uid(),date,cat,amount:Math.round(amount*100)/100,taxIncl:$("eTax").checked,note});
+  save(); $("eAmt").value=""; $("eNote").value="";
+  renderExp(); renderSum(); flash(m,"ok",t("exp_added"));
+}
+function csvCell(v){ v = String(v==null?"":v); if(/^[=+\-@\t\r]/.test(v)) v = "'"+v; return '"'+v.replace(/"/g,'""')+'"'; }
+function download(name, text, type){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text],{type})); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function needPro(){ if(isPro()) return false; flash($("expMsg2"),"warn",t("pro_only")); return true; }
+function csvTrips(){
+  if(needPro()) return;
+  const c = calc(year); const rows = [[t("c_date"),t("c_type"),t("c_from"),t("c_to"),t("c_purpose"),t("c_km"),t("c_o1"),t("c_o2")]];
+  [...c.trips].sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>rows.push([x.date,x.type==="b"?t("type_b"):t("type_p"),x.from,x.to,x.purpose,x.km.toFixed(1),x.o1==null?"":x.o1,x.o2==null?"":x.o2]));
+  download("carnetkm-trajets-"+year+".csv","﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+}
+function csvExp(){
+  if(needPro()) return;
+  const c = calc(year); const rows = [[t("c_date"),t("c_cat"),t("c_amt"),t("c_taxi"),t("c_note")]];
+  [...c.exps].sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>rows.push([x.date,T[S.lang].cats[x.cat]||x.cat,x.amount.toFixed(2),x.taxIncl?t("yes"):t("no"),x.note]));
+  download("carnetkm-depenses-"+year+".csv","﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+}
+function printLog(){
+  if(needPro()) return;
+  const c = calc(year), o = S.odo[year]||{};
+  const trips = [...c.trips].sort((a,b)=>a.date.localeCompare(b.date));
+  $("print").innerHTML = '<h1>'+esc(t("p_title"))+' '+year+'</h1><div class="meta">'+
+    '<div><b>'+esc(t("p_name"))+' :</b> '+esc(S.settings.name||"—")+'</div><div><b>'+esc(t("p_veh"))+' :</b> '+esc(S.settings.vehicle||"—")+'</div>'+
+    '<div><b>'+esc(t("p_o1"))+' :</b> '+(o.start!=null?o.start:"—")+'</div><div><b>'+esc(t("p_o2"))+' :</b> '+(o.end!=null?o.end:"—")+'</div>'+
+    '<div><b>'+esc(t("s_biz"))+' :</b> '+nKm(c.biz)+' km</div><div><b>'+esc(c.hasOdo&&!c.odoBad&&c.odoTotal>0?t("s_tot"):t("s_tot_est"))+' :</b> '+nKm(c.total)+' km</div>'+
+    '<div><b>'+esc(t("s_pct"))+' :</b> '+nPct(c.pct)+'</div></div>'+
+    '<table><thead><tr><th>'+esc(t("c_date"))+'</th><th>'+esc(t("c_type"))+'</th><th>'+esc(t("c_from"))+'</th><th>'+esc(t("c_to"))+'</th><th>'+esc(t("c_purpose"))+'</th><th class="n">'+esc(t("c_o1"))+'</th><th class="n">'+esc(t("c_o2"))+'</th><th class="n">'+esc(t("c_km"))+'</th></tr></thead><tbody>'+
+    trips.map(x=>'<tr><td>'+x.date+'</td><td>'+esc(x.type==="b"?t("type_b"):t("type_p"))+'</td><td>'+esc(x.from)+'</td><td>'+esc(x.to)+'</td><td>'+esc(x.purpose)+'</td><td class="n">'+(x.o1==null?"":x.o1)+'</td><td class="n">'+(x.o2==null?"":x.o2)+'</td><td class="n">'+nKm(x.km)+'</td></tr>').join("")+
+    '</tbody></table><div class="foot">'+esc(t("p_gen",{d:new Date().toLocaleDateString(loc())}))+'</div>';
+  window.print();
+}
+
+/* ---------- licence (Gumroad) ---------- */
+async function verifyLicense(key, first){
+  const body = new URLSearchParams({product_id:CONFIG.gumroadProductId, license_key:key, increment_uses_count:first?"true":"false"});
+  const r = await fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",body});
+  const j = await r.json().catch(()=>null);
+  if(!j || !j.success) return {ok:false, reason:"bad"};
+  const p = j.purchase||{}; const past = d => d && new Date(d).getTime() <= Date.now();
+  if(p.refunded || p.chargebacked || p.disputed) return {ok:false, reason:"ended"};
+  if(past(p.subscription_ended_at) || past(p.subscription_cancelled_at) || past(p.subscription_failed_at)) return {ok:false, reason:"ended"};
+  return {ok:true};
+}
+async function activate(){
+  const key = $("licKey").value.trim(), m = $("licMsg");
+  if(!key) return flash(m,"err",t("lic_empty"));
+  flash(m,"warn",t("lic_checking")); $("bLic").disabled = true;
+  try{
+    const r = await verifyLicense(key, true);
+    if(r.ok){ S.license = {key, ok:true, verifiedAt:Date.now()}; save(); renderAll(); flash($("proState"),"ok",t("lic_ok")); }
+    else flash(m,"err",t(r.reason==="ended"?"lic_ended":"lic_bad"));
+  }catch(e){ flash(m,"err",t("lic_net")); }
+  $("bLic").disabled = false;
+}
+async function recheck(){
+  const L = S.license; if(!configured() || !L || !L.key) return;
+  if(Date.now() - (L.verifiedAt||0) < 3*864e5) return;
+  try{ const r = await verifyLicense(L.key,false); L.ok = r.ok; if(r.ok) L.verifiedAt = Date.now(); save(); renderAll(); }catch(e){}
+}
+
+/* ---------- wiring ---------- */
+function init(){
+  load();
+  $("tDate").value = today(); $("eDate").value = today();
+  renderAll(); $("eTax").checked = !!CATS[$("eCat").value].tax;
+  $("tripForm").addEventListener("submit", addTrip);
+  $("expForm").addEventListener("submit", addExp);
+  $("eCat").addEventListener("change", ()=>{ $("eTax").checked = !!CATS[$("eCat").value].tax; expHint(); });
+  $("langBtn").addEventListener("click", ()=>{ S.lang = S.lang==="fr"?"en":"fr"; save(); renderAll(); });
+  document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click", ()=>{
+    document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", x===b ? "true":"false"));
+    ["trips","exp","sum","pro"].forEach(k=>{ $("p-"+k).hidden = k!==b.dataset.tab; });
+  }));
+  document.addEventListener("click", ev=>{
+    const el = ev.target.closest("[data-del-trip],[data-del-exp],[data-fav],#licRm"); if(!el) return;
+    if((el.dataset.delTrip||el.dataset.delExp) && !el.dataset.armed){ el.dataset.armed="1"; el.textContent=t("del_sure"); el.style.color="var(--alert)"; el.style.fontWeight="600";
+      setTimeout(()=>{ if(el.isConnected){ delete el.dataset.armed; el.textContent=t("del"); el.style.color=""; el.style.fontWeight=""; } }, 4000); return; }
+    if(el.dataset.delTrip){ S.trips = S.trips.filter(x=>x.id!==el.dataset.delTrip); save(); renderTrips(); renderSum(); renderHero(); }
+    else if(el.dataset.delExp){ S.expenses = S.expenses.filter(x=>x.id!==el.dataset.delExp); save(); renderExp(); renderSum(); }
+    else if(el.dataset.fav){ const f = S.favs.find(x=>x.id===el.dataset.fav); if(f){ $("tFrom").value=f.from; $("tTo").value=f.to; $("tPurpose").value=f.purpose; $("tKm").value=f.km; $("tKm").focus(); } }
+    else if(el.id==="licRm"){ S.license = null; save(); renderAll(); }
+  });
+  $("sYear").addEventListener("change", ()=>{ year = +$("sYear").value; renderSum(); });
+  const odoIn = ()=>{ const a = num($("sO1").value), b = num($("sO2").value); S.odo[year] = {start:a, end:b}; save(); renderSum(); renderHero(); };
+  $("sO1").addEventListener("input", odoIn); $("sO2").addEventListener("input", odoIn);
+  $("sName").addEventListener("input", ()=>{ S.settings.name = $("sName").value.trim(); save(); });
+  $("sVeh").addEventListener("input", ()=>{ S.settings.vehicle = $("sVeh").value.trim(); save(); });
+  $("sProv").addEventListener("change", ()=>{ S.settings.prov = $("sProv").value; save(); renderSum(); });
+  $("sReg").addEventListener("change", ()=>{ S.settings.registered = $("sReg").checked; save(); renderSum(); });
+  $("bPrint").addEventListener("click", printLog); $("bCsvT").addEventListener("click", csvTrips); $("bCsvE").addEventListener("click", csvExp);
+  $("bLic").addEventListener("click", activate);
+  $("bBackup").addEventListener("click", ()=> download("carnetkm-sauvegarde-"+today()+".json", JSON.stringify(S,null,1), "application/json"));
+  $("bRestore").addEventListener("click", ()=> $("fRestore").click());
+  $("fRestore").addEventListener("change", ev=>{
+    const f = ev.target.files[0]; if(!f) return; const rd = new FileReader();
+    rd.onload = ()=>{ try{ const o = JSON.parse(rd.result);
+        if(!o || o.app!=="carnetkm" || !Array.isArray(o.trips) || !Array.isArray(o.expenses)) throw 0;
+        const clean = blank();
+        clean.lang = o.lang==="en"?"en":"fr";
+        clean.settings = {name:String((o.settings||{}).name||"").slice(0,60), vehicle:String((o.settings||{}).vehicle||"").slice(0,60), prov:PROV[(o.settings||{}).prov]?(o.settings||{}).prov:"QC", registered:!!(o.settings||{}).registered};
+        const okDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
+        clean.trips = o.trips.filter(x=>x && okDate(x.date) && isFinite(+x.km) && +x.km>0).map(x=>({id:String(x.id||uid()),date:x.date,type:x.type==="p"?"p":"b",from:String(x.from||"").slice(0,80),to:String(x.to||"").slice(0,80),purpose:String(x.purpose||"").slice(0,80),km:round1(+x.km),o1:isFinite(x.o1)&&x.o1!==null?+x.o1:null,o2:isFinite(x.o2)&&x.o2!==null?+x.o2:null}));
+        clean.expenses = o.expenses.filter(x=>x && okDate(x.date) && isFinite(+x.amount) && +x.amount>0).map(x=>({id:String(x.id||uid()),date:x.date,cat:CATS[x.cat]?x.cat:"othb",amount:Math.round(+x.amount*100)/100,taxIncl:!!x.taxIncl,note:String(x.note||"").slice(0,80)}));
+        clean.favs = (Array.isArray(o.favs)?o.favs:[]).filter(x=>x && isFinite(+x.km)).slice(0,30).map(x=>({id:String(x.id||uid()),from:String(x.from||"").slice(0,80),to:String(x.to||"").slice(0,80),purpose:String(x.purpose||"").slice(0,80),km:round1(+x.km)}));
+        if(o.odo && typeof o.odo==="object") for(const y in o.odo){ if(/^\d{4}$/.test(y)){ const v=o.odo[y]||{}; clean.odo[y]={start:isFinite(v.start)&&v.start!==null?+v.start:null,end:isFinite(v.end)&&v.end!==null?+v.end:null}; } }
+        clean.license = S.license;
+        const box = $("bkMsg");
+        box.innerHTML = '<div class="msg warn">'+esc(t("bk_confirm"))+' <span class="muted">('+clean.trips.length+' / '+clean.expenses.length+')</span><div class="row" style="margin-top:8px"><button class="btn" type="button" id="bkYes">'+esc(t("bk_yes"))+'</button><button class="btn alt" type="button" id="bkNo">'+esc(t("bk_no"))+'</button></div></div>';
+        $("bkYes").onclick = ()=>{ S = clean; save(); renderAll(); flash(box,"ok",t("bk_ok")); };
+        $("bkNo").onclick = ()=>{ box.innerHTML=""; };
+      }catch(e){ flash($("bkMsg"),"err",t("bk_bad")); } ev.target.value=""; };
+    rd.readAsText(f);
+  });
+  recheck();
+  if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "CarnetKM – Registre de kilométrage",
+  "short_name": "CarnetKM",
+  "description": "Registre de kilométrage et de dépenses d'auto pour livreurs et travailleurs autonomes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F2F5F3",
+  "theme_color": "#0E6B4E",
+  "lang": "fr-CA",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
