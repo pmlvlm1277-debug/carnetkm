@@ -1,5 +1,5 @@
 // CarnetKM – cache hors ligne. Réseau d'abord pour la page (mises à jour rapides), cache en secours.
-const CACHE = "carnetkm-v1";
+const CACHE = "carnetkm-v2";
 const FILES = ["./", "index.html", "manifest.json", "icon.svg"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
