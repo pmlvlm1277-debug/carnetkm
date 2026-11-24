@@ -269,6 +269,7 @@ test("Bundle (simulation) : 3 mois Plus, sans renouvellement, retour Gratuit à 
   // 23 février 2027 : encore actif; 24 février : terminé
   for (const [now, expected] of [["2027-02-23T23:59:00", "plus"], ["2027-02-24T00:00:30", "free"]]) {
     const o = await open({ now, st: st2 });
+    await configure(o.page, { sim: true });
     assert.equal(await o.page.evaluate(() => plan()), expected, now);
     if (expected === "free") {
       await goPlans(o.page);
@@ -316,7 +317,7 @@ test("Bundle : activation le 30 novembre → fin le 28 février inclus; 31 août
 test("Changement de forfait : bundle Plus + abonnement Pro → Pro; fin de Pro → retour Plus jusqu'à l'échéance", async () => {
   const trial = { plan: "plus", start: "2026-11-24", end: "2027-02-24", source: "bundle-sim", ref: "DEMO-AAAA" };
   const { ctx, page } = await open({ now: "2026-12-10T10:00:00", st: state({ trial, redeemed: ["DEMO-AAAA"], trips: trips("2026-12-01", 61) }), gumroad: b => b.product_id === "FICTIF-PRO" ? { success: true, purchase: {} } : { success: false } });
-  await configure(page, { plus: true, pro: true });
+  await configure(page, { plus: true, pro: true, sim: true });
   assert.equal(await page.evaluate(() => plan()), "plus");
   assert.match(await addTrip(page, "2026-12-10"), /atteint 60 trajets/);
   await goPlans(page); await page.fill("#licKey", "FICTIVE-PRO-KEY"); await page.click("#bLic");
@@ -379,13 +380,13 @@ test("SEC-001 : sauvegarde piégée neutralisée (XSS, identifiants), CSV proté
   await ctx.close();
 });
 
-test("SEC-001 : CSP inchangée, polices locales, service worker v4, aucune requête externe", async () => {
+test("SEC-001 : CSP inchangée, polices locales, service worker v5, aucune requête externe", async () => {
   const html = readFileSync(join(ROOT, "index.html"), "utf8");
   assert.match(html, /content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https:\/\/api\.gumroad\.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"/);
   assert.doesNotMatch(html, /fonts\.googleapis|fonts\.gstatic/);
-  assert.match(readFileSync(join(ROOT, "sw.js"), "utf8"), /carnetkm-v4/);
+  assert.match(readFileSync(join(ROOT, "sw.js"), "utf8"), /carnetkm-v5/);
   const app = readFileSync(join(ROOT, "app.js"), "utf8");
-  assert.doesNotMatch(app, /fetch\((?!"https:\/\/api\.gumroad\.com)/, "seul Gumroad est appelé");
+  assert.deepEqual([...app.matchAll(/fetch\(([^,]+),/g)].map(m => m[1]).sort(), ['"https://api.gumroad.com/v2/licenses/verify"', "CONFIG.entitlements.endpoint + path"].sort(), "seuls Gumroad (mode direct) et le service de droits configuré sont appelés");
   const { ctx, page, external } = await open();
   const csp = []; page.on("console", m => { if (/Content Security Policy/i.test(m.text())) csp.push(m.text()); });
   for (const tab of ["#t-exp", "#t-sum", "#t-pro", "#t-trips"]) await page.click(tab);
@@ -408,15 +409,16 @@ test("Mobile (iPhone 13) : forfaits empilés, pas de défilement horizontal, sai
 });
 
 // ---------- hors ligne (HTTPS local, service worker réel) ----------
-test("Hors ligne : service worker v4, rechargement sans réseau, quota et offre appliqués localement", async () => {
+test("Hors ligne : service worker v5, rechargement sans réseau, quota et offre appliqués localement", async () => {
   const trial = { plan: "plus", start: "2026-11-24", end: "2027-02-24", source: "bundle-sim", ref: "DEMO-AAAA" };
   const { ctx, page } = await open({ url: `https://localhost:${HTTPS}/`, st: state({ trial, trips: trips("2026-11-02", 59) }) });
   await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   if (!(await page.evaluate(() => !!navigator.serviceWorker.controller))) await page.reload();
   assert.ok(await page.evaluate(() => !!navigator.serviceWorker.controller), "page contrôlée par le service worker");
-  assert.ok(await page.evaluate(async () => (await caches.keys()).includes("carnetkm-v4")));
+  assert.ok(await page.evaluate(async () => (await caches.keys()).includes("carnetkm-v5")));
   await ctx.setOffline(true);
   await page.reload();
+  await configure(page, { sim: true });
   assert.equal(await page.evaluate(() => plan()), "plus");
   assert.equal(await addTrip(page, "2026-11-24"), "Trajet ajouté.");
   assert.match(await addTrip(page, "2026-11-25"), /atteint 60 trajets/);

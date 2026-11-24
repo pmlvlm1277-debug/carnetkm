@@ -86,7 +86,7 @@ h3{font:600 21px/1.2 var(--f-sign);margin:0 0 8px}
 .grid .full{grid-column:1/-1}
 @media (min-width:700px){.grid.g4{grid-template-columns:1fr 1fr 1fr 1fr}.grid.g4 .half{grid-column:span 2}}
 label{display:block;font-weight:500;font-size:15px;margin-bottom:4px}
-input[type=text],input[type=number],input[type=date],select{width:100%;border:1.5px solid #A9B6B2;border-radius:var(--r-sm);padding:10px 11px;background:#fff;min-height:46px}
+input[type=text],input[type=email],input[type=number],input[type=date],select{width:100%;border:1.5px solid #A9B6B2;border-radius:var(--r-sm);padding:10px 11px;background:#fff;min-height:46px}
 input:focus,select:focus{border-color:var(--sign)}
 .seg{display:flex;border:1.5px solid var(--ink);border-radius:var(--r-sm);overflow:hidden}
 .seg label{flex:1;margin:0;text-align:center;padding:10px 6px;cursor:pointer;font-weight:600;font-size:16px}
@@ -320,6 +320,15 @@ footer p{margin:0 0 6px;max-width:75ch}
     <div class="row" id="bunForm">
       <div style="flex:1;min-width:220px"><label for="bunCode" data-i="bun_l"></label><input type="text" id="bunCode" autocomplete="off" spellcheck="false" maxlength="20"></div>
       <button class="btn" type="button" id="bBun" data-i="bun_b" style="align-self:end"></button>
+    </div>
+    <div id="bunSrv">
+      <div class="grid">
+        <div><label for="bunOrder" data-i="bun_order"></label><input type="text" id="bunOrder" autocomplete="off" spellcheck="false" maxlength="40"></div>
+        <div><label for="bunEmail" data-i="bun_email"></label><input type="email" id="bunEmail" autocomplete="email" maxlength="254"></div>
+        <div class="full row"><button class="btn" type="button" id="bBunClaim" data-i="bun_claim"></button></div>
+        <div class="full"><label for="bunRec" data-i="bun_rec_l"></label>
+          <div class="row"><input type="text" id="bunRec" autocomplete="off" spellcheck="false" maxlength="60" style="flex:1;min-width:200px"><button class="btn alt" type="button" id="bBunRec" data-i="bun_rec_b"></button></div></div>
+      </div>
     </div>
     <div id="bunMsg" role="status"></div>
   </div>
