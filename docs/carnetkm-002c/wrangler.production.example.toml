@@ -1,0 +1,53 @@
+# CarnetKM : service de droits, configuration FUTURE (exemple documentaire, MISSION-CARNETKM-002-C).
+# AUCUN compte, AUCUNE base, AUCUN déploiement n'existe. Aucun identifiant réel, aucun secret.
+# Les valeurs <…> sont remplies par le propriétaire au moment de l'étape autorisée correspondante (03-procedures.md).
+# Les SECRETS ne vont jamais ici : `wrangler secret put <NOM>` (chiffrés, CF17). Ne jamais commiter .dev.vars ni .env.
+#   Secrets attendus : PEPPER (≥ 32 octets aléatoires), FW_WEBHOOK_SECRET (Fourthwall, Settings > For developers),
+#                      SIGNING_KEY (JWK ECDSA P-256 privée), [option C7-B] FW_OAUTH_TOKEN (portée order_read uniquement).
+
+name = "carnetkm-entitlements"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true                 # *.workers.dev : sans route, dépassement du quota = Error 1027 (échec fermé)
+# Domaine personnalisé futur seulement : route en mode « Fail closed » (CF2).
+
+[vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "https://pmlvlm1277-debug.github.io"
+FW_SHOP_ID = "<sh_…>"              # correction C6 : refuser tout webhook d'une autre boutique
+ELIGIBLE_OFFER_IDS = "<UUID de l'offre bundle SharpLaughs>"   # data.offers[n].id (FW7)
+EXCLUDED_SOURCES = "SamplesOrder"  # C6 ; GiveawayLinks / TwitchGiftRedemption : décision à prendre
+REVOKE_STATUSES = "CANCELLED"      # C5 : seul statut de révocation existant (FW8, FW9)
+TOKEN_TTL_DAYS = "14"              # C1 : décision approuvée (14 jours hors ligne)
+RENEW_BEFORE_DAYS = "7"
+MAX_DEVICES = "3"                  # C3 ; licences d'origine exemptées (C4)
+SIGNING_KID = "k2027a"
+PUBLIC_KEYS = '{"k2027a": {"kty":"EC","crv":"P-256","x":"<…>","y":"<…>"}}'   # clés PUBLIQUES (rotation : garder l'ancienne ≥ 60 j)
+GUMROAD_PRODUCTS = '[{"id":"<produit d origine>","plan":"pro","slot":"legacy"},{"id":"<Plus>","plan":"plus","slot":"plus"},{"id":"<Pro>","plan":"pro","slot":"pro"}]'
+# ACCEPT_TEST_EVENTS : JAMAIS en production (refusé par le code). Préproduction seulement (C12).
+
+[[d1_databases]]
+binding = "DB"
+database_name = "carnetkm-entitlements"
+database_id = "<sortie de `wrangler d1 create`>"   # pas de juridiction canadienne disponible (CF14) → EFVP
+
+[triggers]
+crons = ["17 7 * * *"]            # purge quotidienne (UTC, CF19) ; CPU 10 ms sur Free (CF3) → purge par lots
+
+[observability]
+enabled = true
+[observability.logs]
+invocation_logs = false            # C10 : ne pas conserver requêtes/métadonnées (IP, en-têtes)
+head_sampling_rate = 1             # journaux applicatifs minimaux {evt, outcome} seulement
+
+# ---------- Préproduction (Worker et base DISTINCTS) ----------
+[env.staging]
+name = "carnetkm-entitlements-staging"
+[env.staging.vars]
+ENVIRONMENT = "staging"
+ACCEPT_TEST_EVENTS = "true"        # « Send test notification » de Fourthwall (FW14)
+ALLOWED_ORIGIN = "http://localhost:8790"
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "carnetkm-entitlements-staging"
+database_id = "<…>"
