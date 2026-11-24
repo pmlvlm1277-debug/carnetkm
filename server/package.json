@@ -1,0 +1,10 @@
+{
+  "name": "carnetkm-entitlements",
+  "private": true,
+  "type": "module",
+  "description": "PROTOTYPE LOCAL du service de droits CarnetKM (MISSION-CARNETKM-002-B). Non déployé.",
+  "scripts": {
+    "test": "node --no-warnings --test test/server.test.mjs",
+    "dev": "node --no-warnings dev/serve.mjs"
+  }
+}

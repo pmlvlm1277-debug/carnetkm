@@ -22,8 +22,16 @@ const CONFIG = {
   // Offre bundle SharpLaughs : 3 mois calendaires de Plus, sans carte ni renouvellement.
   // mode "off" (défaut publié) | "simulation" (tests et démonstration avec codes fictifs DEMO-…, aucun appel réseau).
   // Le mode réel exige une validation des droits hors client (voir docs/CARNETKM-002-architecture.md).
-  bundle: { mode: "off", plan: "plus", months: 3 }
+  bundle: { mode: "off", plan: "plus", months: 3 },
+  // Service de droits (MISSION-CARNETKM-002-B). Vide = inactif. À remplir seulement après déploiement autorisé :
+  // endpoint "https://…" (à ajouter aussi dans connect-src de la CSP) et clés PUBLIQUES {kid: JWK P-256}. Aucun secret ici.
+  // Avec un endpoint, bundle.mode "server" active la réclamation par commande Fourthwall, et les licences passent par le service.
+  entitlements: { endpoint: "", keys: {} },
+  // Accès de lancement (tout ouvert si aucun produit configuré) : désactivé. Ne s'active que par ce drapeau explicite.
+  launchAccess: false
 };
+// Hôtes de développement : seuls endroits où le mode simulation peut fonctionner (jamais en production).
+const DEV_HOST = h => /^(localhost|127\.0\.0\.1|\[::1\])$/.test(h);
 
 /* ---------- i18n ---------- */
 const T = {
@@ -62,7 +70,12 @@ fr:{
  trial_end:"Ton offre bundle SharpLaughs a pris fin le {d}. Tu reviens au forfait Gratuit; toutes tes données restent là. Tu peux t'abonner quand tu veux.",
  bun_h:"Acheteur du bundle SharpLaughs?", bun_p:"Trois mois de CarnetKM Plus offerts, à compter de l'activation. Sans carte de crédit, sans renouvellement automatique : à la fin, tu reviens au forfait Gratuit, sauf si tu choisis de t'abonner.",
  bun_soon:"L'activation de l'offre arrive bientôt.", bun_sim:"Mode simulation : codes fictifs seulement (DEMO-…), aucune vérification réelle.", bun_l:"Code d'activation du bundle", bun_b:"Activer mes 3 mois Plus",
+ bun_srv:"Entre le numéro de ta commande Fourthwall et le courriel utilisé pour l'achat. Seuls ces deux renseignements sont envoyés pour vérifier ton achat : tes trajets, tes dépenses et tes renseignements fiscaux restent sur ton appareil.",
+ bun_order:"Numéro de commande Fourthwall", bun_email:"Courriel utilisé pour la commande", bun_claim:"Activer mes 3 mois Plus", bun_rec_l:"Code de récupération (nouvel appareil)", bun_rec_b:"Récupérer mon offre",
+ bun_rec_show:"Ton code de récupération : {c}. Garde-le en lieu sûr : il réactive ton offre sur un autre appareil, sans la redémarrer.",
+ bun_notfound:"Aucune commande admissible ne correspond à ce numéro et à ce courriel.", bun_revoked:"Cette commande a été annulée ou remboursée : l'offre n'est plus disponible.", bun_expired:"Cette offre est terminée.", bun_devices:"Cette offre a atteint le nombre maximal d'appareils.", bun_rate:"Trop d'essais. Réessaie dans une heure.", bun_net:"Impossible de joindre le service. Vérifie ta connexion et réessaie.",
  bun_ok:"Offre activée : forfait {plan} jusqu'au {d} inclusivement.", bun_bad:"Ce code n'est pas valide.", bun_used:"Ce code a déjà été utilisé.", bun_once:"Une offre bundle a déjà été activée sur cet appareil.", bun_empty:"Entre ton code d'activation.",
+ lic_devices:"Cette clé est déjà utilisée sur le nombre maximal d'appareils.",
  lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer mon abonnement", lic_checking:"Vérification…", lic_ok:"Abonnement activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour le réactiver.", lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
  bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone. La sauvegarde ne contient ni ta clé de licence ni ton offre bundle : garde le courriel de Gumroad pour réactiver ton abonnement.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
  faq_h:"Questions fréquentes",
@@ -116,7 +129,12 @@ en:{
  trial_end:"Your SharpLaughs bundle offer ended on {d}. You're back on the Free plan; all your data is still here. You can subscribe whenever you like.",
  bun_h:"Bought the SharpLaughs bundle?", bun_p:"Three months of CarnetKM Plus on us, starting when you activate. No credit card, no automatic renewal: at the end you go back to Free, unless you choose to subscribe.",
  bun_soon:"Offer activation is coming soon.", bun_sim:"Simulation mode: test codes only (DEMO-…), no real check.", bun_l:"Bundle activation code", bun_b:"Activate my 3 months of Plus",
+ bun_srv:"Enter your Fourthwall order number and the email used for the purchase. Only these two details are sent to check your purchase: your trips, expenses and tax details stay on your device.",
+ bun_order:"Fourthwall order number", bun_email:"Email used for the order", bun_claim:"Activate my 3 months of Plus", bun_rec_l:"Recovery code (new device)", bun_rec_b:"Recover my offer",
+ bun_rec_show:"Your recovery code: {c}. Keep it somewhere safe: it reactivates your offer on another device without restarting it.",
+ bun_notfound:"No eligible order matches this number and email.", bun_revoked:"This order was cancelled or refunded: the offer is no longer available.", bun_expired:"This offer has ended.", bun_devices:"This offer has reached the maximum number of devices.", bun_rate:"Too many attempts. Try again in an hour.", bun_net:"Can't reach the service. Check your connection and try again.",
  bun_ok:"Offer activated: {plan} plan through {d}.", bun_bad:"This code isn't valid.", bun_used:"This code has already been used.", bun_once:"A bundle offer has already been activated on this device.", bun_empty:"Enter your activation code.",
+ lic_devices:"This key is already in use on the maximum number of devices.",
  lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate my subscription", lic_checking:"Checking…", lic_ok:"Subscription activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate it.", lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
  bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones. The backup doesn't include your licence key or your bundle offer: keep the Gumroad email to reactivate your subscription.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
  faq_h:"Common questions",
@@ -151,13 +169,17 @@ const CATS = {
 /* ---------- state ---------- */
 const KEY = "carnetkm.v1";
 // Format de sauvegarde inchangé (v:1). « license » et « trial » sont des droits propres à l'appareil : jamais exportés ni importés.
-const blank = () => ({app:"carnetkm",v:1,lang:null,settings:{name:"",vehicle:"",prov:"QC",registered:false},odo:{},trips:[],expenses:[],favs:[],license:null,trial:null,redeemed:[]});
+const blank = () => ({app:"carnetkm",v:1,lang:null,settings:{name:"",vehicle:"",prov:"QC",registered:false},odo:{},trips:[],expenses:[],favs:[],license:null,trial:null,redeemed:[],device:null,ent:{lic:null,bun:null}});
 let S = blank();
 function load(){
   try{ const raw = localStorage.getItem(KEY); if(raw){ const o = JSON.parse(raw); if(o && o.app==="carnetkm"){
     // Les données locales passent par le même nettoyage qu'une sauvegarde importée (une ancienne importation piégée y est neutralisée).
     S = sanitizeState(o, true); S.license = sanitizeLicense(o.license); S.trial = sanitizeTrial(o.trial); S.redeemed = sanitizeRedeemed(o.redeemed);
+    S.device = typeof o.device==="string" && /^[a-z0-9]{16,64}$/.test(o.device) ? o.device : null;
+    const tok = v => typeof v==="string" && v.length < 4096 && /^[\w-]+\.[\w-]+\.[\w-]+$/.test(v) ? v : null;
+    S.ent = {lic: tok(o.ent && o.ent.lic), bun: tok(o.ent && o.ent.bun)};
   } } }catch(e){ S = blank(); }
+  if(!S.device) S.device = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2,"0")).join("");
   if(!S.lang) S.lang = (navigator.language||"fr").toLowerCase().startsWith("en") ? "en" : "fr";
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -195,7 +217,7 @@ function sanitizeTrial(x){
 }
 function sanitizeRedeemed(a){ return (Array.isArray(a)?a:[]).filter(x=>typeof x==="string").slice(0,20).map(x=>x.slice(0,64)); }
 // Sauvegarde exportée : tout sauf les droits (licence, offre bundle), qui restent sur cet appareil.
-function exportState(){ const o = JSON.parse(JSON.stringify(S)); delete o.license; delete o.trial; delete o.redeemed; return o; }
+function exportState(){ const o = JSON.parse(JSON.stringify(S)); delete o.license; delete o.trial; delete o.redeemed; delete o.device; delete o.ent; return o; }
 
 /* ---------- dates calendaires (chaînes AAAA-MM-JJ, heure locale de l'appareil) ---------- */
 const fmtYmd = (y,m,d) => y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0");
@@ -233,18 +255,65 @@ const productOf = slot => CONFIG.products.find(p => p.slot===slot);
 // Limite connue : ce contrôle s'exécute dans le navigateur et reste contournable par un utilisateur technique (F1 non résolu).
 const LIC_GRACE = 14*864e5, LIC_RECHECK = 3*864e5, CLOCK_SKEW = 5*60e3;
 function validStamp(v){ return typeof v==="number" && isFinite(v) && v > 0 && v <= Date.now() + CLOCK_SKEW; }
+/* ---------- service de droits : jetons signés ES256 ----------
+   Les droits ne sont acceptés que d'un jeton dont la signature est vérifiée avec une clé PUBLIQUE de CONFIG.entitlements.keys.
+   Le jeton expire après 7 jours (grâce hors ligne) et se renouvelle en ligne. Les payloads vérifiés vivent en mémoire seulement.
+   Limite assumée : le code client reste modifiable; la signature empêche de fabriquer des droits, pas de contourner les
+   quotas et exports locaux (F1). */
+const ENT = {lic:null, bun:null};
+const serverMode = () => !!(CONFIG.entitlements.endpoint && Object.keys(CONFIG.entitlements.keys||{}).length);
+function bundleMode(host){
+  const m = CONFIG.bundle.mode;
+  if(m==="simulation") return DEV_HOST(host===undefined ? location.hostname : host) ? "simulation" : "off";
+  if(m==="server") return serverMode() ? "server" : "off";
+  return "off";
+}
+const b64u = s => Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length+3)%4)), c => c.charCodeAt(0));
+async function verifyJws(token){
+  try{
+    const [h,p,sig] = String(token).split(".");
+    const head = JSON.parse(new TextDecoder().decode(b64u(h))), pay = JSON.parse(new TextDecoder().decode(b64u(p)));
+    const jwk = (CONFIG.entitlements.keys||{})[head.kid];
+    if(head.alg!=="ES256" || !jwk || !crypto.subtle) return null;
+    const key = await crypto.subtle.importKey("jwk", jwk, {name:"ECDSA", namedCurve:"P-256"}, false, ["verify"]);
+    const ok = await crypto.subtle.verify({name:"ECDSA", hash:"SHA-256"}, key, b64u(sig), new TextEncoder().encode(h+"."+p));
+    const now = Date.now()/1000;
+    if(!ok || typeof pay.exp!=="number" || now >= pay.exp || typeof pay.iat!=="number" || pay.iat > now + 86400) return null;
+    if(!PLAN_RANK[pay.plan]) return null;
+    return pay;
+  }catch(e){ return null; }
+}
+async function loadEntitlements(){
+  if(!serverMode()) return;
+  ENT.lic = S.ent.lic ? await verifyJws(S.ent.lic) : null;
+  ENT.bun = S.ent.bun ? await verifyJws(S.ent.bun) : null;
+  if(ENT.lic && ENT.lic.src!=="gumroad") ENT.lic = null;
+  if(ENT.bun && ENT.bun.src!=="bundle") ENT.bun = null;
+  if(ENT.bun) S.trial = {plan:ENT.bun.plan, start:ENT.bun.ent_start, end:ENT.bun.ent_end, source:"bundle", ref:""};
+}
+async function api(path, body){
+  try{
+    const r = await fetch(CONFIG.entitlements.endpoint + path, {method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify(body), cache:"no-store", credentials:"omit"});
+    return {status:r.status, j: await r.json().catch(()=>null)};
+  }catch(e){ return {status:0, j:null}; }
+}
 function licenseActive(){
+  if(serverMode()) return !!ENT.lic;
   const L = S.license; if(!L || L.ok!==true || !validStamp(L.verifiedAt)) return false;
   return (Date.now() - L.verifiedAt) < LIC_GRACE;
 }
-function trialActive(){ const x = S.trial; if(!x) return false; const d = today(); return d >= x.start && d < x.end; }
+function trialActive(){
+  if(bundleMode()==="server"){ const x = ENT.bun; if(!x) return false; const d = today(); return d >= x.ent_start && d < x.ent_end; }
+  if(bundleMode()!=="simulation") return false;
+  const x = S.trial; if(!x) return false; const d = today(); return d >= x.start && d < x.end;
+}
 function trialEnded(){ const x = S.trial; return !!x && today() >= x.end; }
 // Forfait effectif = le plus élevé des droits actifs (abonnement vérifié, offre bundle en cours), sinon Gratuit.
 // Un changement de forfait ne supprime ni ne masque jamais de données : seules les nouvelles saisies et les rapports sont concernés.
 function planState(){
-  if(!configured()) return {plan:"pro", source:"launch"};
+  if(!configured()) return CONFIG.launchAccess===true ? {plan:"pro", source:"launch"} : {plan:"free", source:"free"};
   let best = {plan:"free", source:"free"};
-  if(licenseActive()){ const p = productOf(S.license.slot) || productOf("legacy"); if(PLAN_RANK[p.plan] > PLAN_RANK[best.plan]) best = {plan:p.plan, source:p.slot}; }
+  if(licenseActive()){ const p = serverMode() ? {plan:ENT.lic.plan, slot:ENT.lic.slot||"legacy"} : (productOf(S.license.slot) || productOf("legacy")); if(PLAN_RANK[p.plan] > PLAN_RANK[best.plan]) best = {plan:p.plan, source:p.slot}; }
   if(trialActive() && PLAN_RANK[S.trial.plan] > PLAN_RANK[best.plan]) best = {plan:S.trial.plan, source:"trial"};
   return best;
 }
@@ -394,7 +463,7 @@ function renderPro(){
   if(st.source==="launch") msgs.push(["ok", t("launch")]);
   else{
     msgs.push([st.plan==="free" ? "warn" : "ok", st.plan==="free" ? t("pro_off") : t("plan_on",{plan:planName(st)})]);
-    if(licenseActive()) msgs.push(["ok", t(S.license.slot==="legacy" ? "legacy_on" : "pro_on"), true]);
+    if(licenseActive()) msgs.push(["ok", t((serverMode() ? ENT.lic.slot : S.license.slot)==="legacy" ? "legacy_on" : "pro_on"), true]);
     if(trialActive()) msgs.push(["ok", t("trial_on",{plan:t("plan_"+S.trial.plan), d:lastDayLabel(S.trial.end)})]);
     else if(trialEnded() && st.plan==="free") msgs.push(["warn", t("trial_end",{d:lastDayLabel(S.trial.end)})]);
   }
@@ -409,9 +478,10 @@ function renderPro(){
   });
   $("freeBadge").innerHTML = st.plan==="free" && st.source!=="launch" ? '<span class="badge">'+esc(t("current"))+'</span>' : "";
   $("licBox").style.display = configured() && !licenseActive() ? "" : "none";
-  const sim = CONFIG.bundle.mode==="simulation";
-  $("bunSoon").textContent = sim ? t("bun_sim") : t("bun_soon");
-  $("bunForm").style.display = sim && !trialActive() ? "" : "none";
+  const bm = bundleMode();
+  $("bunSoon").textContent = bm==="simulation" ? t("bun_sim") : bm==="server" ? t("bun_srv") : t("bun_soon");
+  $("bunForm").style.display = bm==="simulation" && !S.trial ? "" : "none";   // une seule offre par appareil en simulation
+  $("bunSrv").style.display = bm==="server" && !trialActive() ? "" : "none";
 }
 function renderQuota(){
   const ym = ($("tDate").value || today()).slice(0,7), n = tripsInMonth(ym), lim = tripLimit(), st = planState();
@@ -527,6 +597,13 @@ async function activate(){
   const key = $("licKey").value.trim(), m = $("licMsg");
   if(!key) return flash(m,"err",t("lic_empty"));
   flash(m,"warn",t("lic_checking")); $("bLic").disabled = true;
+  if(serverMode()){
+    const r = await api("/v1/license", {key, device:S.device});
+    const pay = r.status===200 && r.j && await verifyJws(r.j.token);
+    if(pay && pay.src==="gumroad"){ S.license = {key:key.slice(0,100), ok:true, verifiedAt:Date.now(), slot:pay.slot}; S.ent.lic = r.j.token; ENT.lic = pay; save(); renderAll(); flash($("proFlash"),"ok",t("lic_ok")); }
+    else flash(m,"err",t(r.status===404?"lic_bad":r.status===403?"lic_ended":r.status===409?"lic_devices":"lic_net"));
+    $("bLic").disabled = false; return;
+  }
   try{
     const r = await verifyLicense(key, true);
     if(r.ok){ S.license = {key:key.slice(0,100), ok:true, verifiedAt:Date.now(), slot:r.slot}; save(); renderAll(); flash($("proFlash"),"ok",t("lic_ok")); }
@@ -535,8 +612,16 @@ async function activate(){
   }catch(e){ flash(m,"err",t("lic_net")); }
   $("bLic").disabled = false;
 }
+const RENEW_BEFORE = 3*86400;   // renouvellement en ligne quand il reste moins de 3 jours au jeton
 async function recheck(){
   const L = S.license; if(!configured() || !L || !L.key) return;
+  if(serverMode()){
+    if(ENT.lic && ENT.lic.exp - Date.now()/1000 > RENEW_BEFORE) return;
+    const r = await api("/v1/license", {key:L.key, device:S.device});
+    if(r.status===200 && r.j){ const pay = await verifyJws(r.j.token); if(pay){ S.ent.lic = r.j.token; ENT.lic = pay; } }
+    else if([403,404].includes(r.status)){ S.ent.lic = null; ENT.lic = null; L.ok = false; }   // révoqué/terminé; panne ou 409 : on garde le jeton jusqu'à son expiration
+    save(); renderAll(); return;
+  }
   // Une date invalide ou future force la revérification; sinon on attend le délai habituel.
   if(validStamp(L.verifiedAt) && Date.now() - L.verifiedAt < LIC_RECHECK) return;
   try{
@@ -553,7 +638,7 @@ async function recheck(){
 const DEMO_RE = /^DEMO-[A-Z0-9]{4,12}$/;
 function activateBundle(){
   const m = $("bunMsg"), code = $("bunCode").value.trim().toUpperCase();
-  if(CONFIG.bundle.mode!=="simulation") return flash(m,"err",t("bun_soon"));
+  if(bundleMode()!=="simulation") return flash(m,"err",t("bun_soon"));
   if(!code) return flash(m,"err",t("bun_empty"));
   if(!DEMO_RE.test(code)) return flash(m,"err",t("bun_bad"));
   if(S.redeemed.includes(code)) return flash(m,"err",t("bun_used"));
@@ -562,6 +647,45 @@ function activateBundle(){
   S.trial = {plan:CONFIG.bundle.plan, start, end:addMonths(start, CONFIG.bundle.months), source:"bundle-sim", ref:code};
   S.redeemed.push(code); save(); $("bunCode").value = ""; renderAll();
   flash($("bunMsg"),"ok",t("bun_ok",{plan:t("plan_"+S.trial.plan), d:lastDayLabel(S.trial.end)}));
+}
+
+/* ---------- offre bundle : mode serveur (réclamation par commande Fourthwall) ---------- */
+// Seuls le numéro de commande et le courriel (réclamation), le code de récupération ou le jeton sont envoyés.
+const BUN_ERR = {404:"bun_notfound", 403:"bun_revoked", 410:"bun_expired", 409:"bun_devices", 429:"bun_rate"};
+async function acceptBundle(r, m){
+  const pay = r.status===200 && r.j && await verifyJws(r.j.token);
+  if(!pay || pay.src!=="bundle") return flash(m,"err",t(BUN_ERR[r.status]||"bun_net"));
+  S.ent.bun = r.j.token; ENT.bun = pay; S.trial = {plan:pay.plan, start:pay.ent_start, end:pay.ent_end, source:"bundle", ref:""};
+  save(); renderAll();
+  const box = $("bunMsg");
+  box.innerHTML = '<div class="msg ok">'+esc(t("bun_ok",{plan:t("plan_"+pay.plan), d:lastDayLabel(pay.ent_end)}))+'</div>' +
+    (r.j.recovery_code ? '<div class="msg warn" id="bunRecShow">'+esc(t("bun_rec_show",{c:r.j.recovery_code}))+'</div>' : "");
+}
+async function claimBundle(){
+  const m = $("bunMsg"), order = $("bunOrder").value.trim(), email = $("bunEmail").value.trim();
+  if(bundleMode()!=="server") return flash(m,"err",t("bun_soon"));
+  if(!order || !email) return flash(m,"err",t("bun_empty"));
+  $("bBunClaim").disabled = true;
+  const r = await api("/v1/bundle/claim", {order, email});
+  $("bBunClaim").disabled = false;
+  if(r.status===200){ $("bunOrder").value = ""; $("bunEmail").value = ""; }
+  return acceptBundle(r, m);
+}
+async function recoverBundle(){
+  const m = $("bunMsg"), code = $("bunRec").value.trim();
+  if(bundleMode()!=="server") return flash(m,"err",t("bun_soon"));
+  if(!code) return flash(m,"err",t("bun_empty"));
+  const r = await api("/v1/bundle/recover", {code});
+  if(r.status===200) $("bunRec").value = "";
+  return acceptBundle(r, m);
+}
+async function refreshBundle(){
+  if(bundleMode()!=="server" || !S.ent.bun) return;
+  if(ENT.bun && ENT.bun.exp - Date.now()/1000 > RENEW_BEFORE) return;
+  const r = await api("/v1/bundle/refresh", {token:S.ent.bun});
+  if(r.status===200 && r.j){ const pay = await verifyJws(r.j.token); if(pay){ S.ent.bun = r.j.token; ENT.bun = pay; } }
+  else if([401,403,410].includes(r.status)){ S.ent.bun = null; ENT.bun = null; }   // révoqué, terminé ou trop ancien : retour Gratuit (récupération possible)
+  save(); renderAll();
 }
 
 /* ---------- wiring ---------- */
@@ -596,6 +720,8 @@ function init(){
   $("bPrint").addEventListener("click", printLog); $("bCsvT").addEventListener("click", csvTrips); $("bCsvE").addEventListener("click", csvExp);
   $("bLic").addEventListener("click", activate);
   $("bBun").addEventListener("click", activateBundle);
+  $("bBunClaim").addEventListener("click", claimBundle);
+  $("bBunRec").addEventListener("click", recoverBundle);
   $("tDate").addEventListener("change", renderQuota);
   $("bBackup").addEventListener("click", ()=> download("carnetkm-sauvegarde-"+today()+".json", JSON.stringify(exportState(),null,1), "application/json"));
   $("bRestore").addEventListener("click", ()=> $("fRestore").click());
@@ -606,12 +732,12 @@ function init(){
         const clean = sanitizeState(o, false);   // C1 : identifiants validés/régénérés, champs bornés
         const box = $("bkMsg");
         box.innerHTML = '<div class="msg warn">'+esc(t("bk_confirm"))+' <span class="muted">('+clean.trips.length+' / '+clean.expenses.length+')</span><div class="row" style="margin-top:8px"><button class="btn" type="button" id="bkYes">'+esc(t("bk_yes"))+'</button><button class="btn alt" type="button" id="bkNo">'+esc(t("bk_no"))+'</button></div></div>';
-        $("bkYes").onclick = ()=>{ clean.license = S.license; clean.trial = S.trial; clean.redeemed = S.redeemed; S = clean; save(); renderAll(); flash(box,"ok",t("bk_ok")); };
+        $("bkYes").onclick = ()=>{ clean.license = S.license; clean.trial = S.trial; clean.redeemed = S.redeemed; clean.device = S.device; clean.ent = S.ent; S = clean; save(); renderAll(); flash(box,"ok",t("bk_ok")); };
         $("bkNo").onclick = ()=>{ box.innerHTML=""; };
       }catch(e){ flash($("bkMsg"),"err",t("bk_bad")); } ev.target.value=""; };
     rd.readAsText(f);
   });
-  recheck();
+  loadEntitlements().then(()=>{ renderAll(); recheck(); refreshBundle(); });
   if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 }
 init();

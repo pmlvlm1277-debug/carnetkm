@@ -1,0 +1,26 @@
+# EXEMPLE SEULEMENT — aucun compte, aucune base, aucun déploiement n'existe. À copier en wrangler.toml après autorisation.
+# Les secrets ne vont JAMAIS ici : `wrangler secret put PEPPER`, `FW_WEBHOOK_SECRET`, `SIGNING_KEY`.
+name = "carnetkm-entitlements"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+workers_dev = true            # adresse *.workers.dev gratuite; aucun domaine requis
+
+[vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "https://pmlvlm1277-debug.github.io"
+ELIGIBLE_OFFER_IDS = "<identifiant de l'offre bundle SharpLaughs dans Fourthwall>"
+REVOKE_STATUSES = "CANCELLED,REFUNDED"          # à confirmer avec une livraison de test Fourthwall
+SIGNING_KID = "k2026a"
+PUBLIC_KEYS = '{"k2026a": {"kty":"EC","crv":"P-256","x":"<…>","y":"<…>"}}'
+GUMROAD_PRODUCTS = '[{"id":"DHMf78a9yPLxm2vB_mFe_w==","plan":"pro","slot":"legacy"},{"id":"<Plus>","plan":"plus","slot":"plus"},{"id":"<Pro>","plan":"pro","slot":"pro"}]'
+
+[[d1_databases]]
+binding = "DB"
+database_name = "carnetkm-entitlements"
+database_id = "<créé par `wrangler d1 create`, après autorisation>"
+
+[triggers]
+crons = ["17 7 * * *"]       # purge quotidienne (rétention)
+
+[observability]
+enabled = true                 # journaux minimaux {evt, outcome}
