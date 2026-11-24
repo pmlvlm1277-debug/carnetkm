@@ -142,7 +142,7 @@ details.more summary{cursor:pointer;font-weight:500;font-size:15.5px;color:var(-
 
 /* pro */
 .plans{display:grid;gap:14px;grid-template-columns:1fr}
-@media (min-width:700px){.plans{grid-template-columns:1fr 1fr}}
+@media (min-width:760px){.plans{grid-template-columns:1fr 1fr 1fr}}
 .plan{background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);padding:18px}
 .plan.pro{border:2px solid var(--ink)}
 .plan .price{font:700 40px/1 var(--f-sign);margin:6px 0 10px}
@@ -240,6 +240,7 @@ footer p{margin:0 0 6px;max-width:75ch}
     </div>
     <div id="tripMsg" role="status"></div>
   </form>
+  <p id="quota" class="muted small" role="status" style="margin:12px 0 0"></p>
   <div id="tripList"></div>
 </section>
 
@@ -290,19 +291,37 @@ footer p{margin:0 0 6px;max-width:75ch}
 <!-- PRO -->
 <section class="panel" id="p-pro" role="tabpanel" aria-labelledby="t-pro" hidden>
   <h2 data-i="pro_h"></h2>
+  <div id="proFlash" role="status"></div>
   <div id="proState"></div>
   <div class="plans">
-    <div class="plan">
-      <h3 data-i="free_t"></h3>
+    <div class="plan" id="planFree">
+      <h3 data-i="plan_free"></h3>
       <div class="price">0 $</div>
       <ul id="freeList"></ul>
+      <div id="freeBadge"></div>
     </div>
-    <div class="plan pro">
-      <h3>Pro</h3>
+    <div class="plan" id="planPlus">
+      <h3 data-i="plan_plus"></h3>
+      <div class="price"><span id="plusPrice"></span> <small data-i="per_month"></small></div>
+      <ul id="plusList"></ul>
+      <div id="plusBuy"></div>
+    </div>
+    <div class="plan pro" id="planPro">
+      <h3 data-i="plan_pro"></h3>
       <div class="price"><span id="proPrice"></span> <small data-i="per_month"></small></div>
       <ul id="proList"></ul>
-      <div id="buyBox"></div>
+      <div id="proBuy"></div>
     </div>
+  </div>
+  <div class="form" style="margin-top:16px" id="bunBox">
+    <h3 data-i="bun_h"></h3>
+    <p class="muted small" data-i="bun_p" style="margin:0 0 10px"></p>
+    <p class="small" id="bunSoon" style="margin:0 0 10px"></p>
+    <div class="row" id="bunForm">
+      <div style="flex:1;min-width:220px"><label for="bunCode" data-i="bun_l"></label><input type="text" id="bunCode" autocomplete="off" spellcheck="false" maxlength="20"></div>
+      <button class="btn" type="button" id="bBun" data-i="bun_b" style="align-self:end"></button>
+    </div>
+    <div id="bunMsg" role="status"></div>
   </div>
   <div class="form" style="margin-top:16px" id="licBox">
     <h3 data-i="lic_h"></h3>
