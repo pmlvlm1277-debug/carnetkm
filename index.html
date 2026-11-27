@@ -159,6 +159,49 @@ details.more summary{cursor:pointer;font-weight:500;font-size:15.5px;color:var(-
 footer{margin:34px 0 0;padding:20px 0 40px;font-size:15px;color:var(--slate);border-top:1px solid var(--line)}
 footer p{margin:0 0 6px;max-width:75ch}
 
+/* ma journée */
+.day{margin-bottom:22px;border:2px solid var(--sign)}
+.day h3{margin-bottom:4px}
+.daylive{display:flex;align-items:center;gap:10px;font-weight:600;background:#E3F2EC;color:var(--sign-deep);border-radius:var(--r-sm);padding:10px 12px}
+.daylive .dot{width:11px;height:11px;border-radius:50%;background:var(--sign);box-shadow:0 0 0 0 rgba(14,107,78,.5);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(14,107,78,0)}100%{box-shadow:0 0 0 0 rgba(14,107,78,0)}}
+@media (prefers-reduced-motion:reduce){.daylive .dot{animation:none}}
+
+/* modification */
+.form.editing{border:2px solid var(--lane);background:#FFFDF3}
+.acts{grid-column:2/-1;display:flex;gap:18px;justify-content:flex-end;flex-wrap:wrap;margin-top:-4px}
+.acts .del{display:inline;margin:0}
+
+/* reçus */
+.rcrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rcrow .lbl{font-weight:500;font-size:15px;width:100%}
+.rcprev{display:flex;gap:10px;align-items:center}
+.rcprev img{height:64px;width:auto;max-width:120px;object-fit:cover;border-radius:var(--r-sm);border:1.5px solid var(--line)}
+.rcprev .del{display:inline;margin:0}
+.rcchip{border:1.5px solid var(--sign);background:#fff;color:var(--sign-deep);border-radius:999px;font-size:13px;font-weight:600;padding:0 8px;margin-left:6px;cursor:pointer;vertical-align:1px}
+.rcchip:hover{background:#E3F2EC}
+.viewer{position:fixed;inset:0;background:rgba(10,20,23,.82);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.viewer[hidden]{display:none}
+.viewer .vin{display:flex;flex-direction:column;gap:12px;align-items:center;max-height:100%}
+.viewer img{max-width:min(92vw,900px);max-height:78vh;border-radius:var(--r-md);background:#fff}
+
+/* graphiques */
+.charts{display:grid;gap:14px;grid-template-columns:1fr;margin-top:14px}
+@media (min-width:700px){.charts{grid-template-columns:1fr 1fr}}
+.chart{margin:0;background:#fff;border:1.5px solid var(--line);border-radius:var(--r-md);padding:12px 12px 6px}
+.chart figcaption{font:600 19px/1.2 var(--f-sign);margin-bottom:2px}
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .gl{stroke:var(--line);stroke-width:1}
+.chart .base{stroke:var(--ink);stroke-width:1.5}
+.chart .tk{font:500 11px var(--f-body);fill:var(--slate)}
+.chart .mo{font:600 12px var(--f-sign);fill:var(--slate);text-anchor:middle}
+.chart .hit{fill:transparent}
+.chart .bk{fill:var(--sign)}
+.chart .be{fill:var(--perso)}
+.chart .bar:hover .hit,.chart .bar:focus .hit{fill:#EEF3F1}
+.chart .bar:hover .mo,.chart .bar:focus .mo{fill:var(--ink)}
+.chart .bar{outline:none}
+
 /* print register */
 #print{display:none}
 @media print{
@@ -172,6 +215,10 @@ footer p{margin:0 0 6px;max-width:75ch}
   #print td.n,#print th.n{text-align:right;white-space:nowrap}
   #print .meta{display:grid;grid-template-columns:1fr 1fr;gap:2pt 20pt;font-size:10pt;margin-top:6pt}
   #print .foot{margin-top:10pt;font-size:8.5pt;color:#444}
+  #print .rch{font:700 16pt var(--f-sign);margin:0;page-break-before:always}
+  #print .rcp{margin:10pt 0 0;page-break-inside:avoid}
+  #print .rcp figcaption{font-size:9.5pt;font-weight:600;margin-bottom:4pt}
+  #print .rcp img{max-width:100%;max-height:8in;border:1px solid #999}
 }
 </style>
 </head>
@@ -210,7 +257,8 @@ footer p{margin:0 0 6px;max-width:75ch}
 <main>
 <!-- TRIPS -->
 <section class="panel" id="p-trips" role="tabpanel" aria-labelledby="t-trips">
-  <h2 data-i="trips_h"></h2>
+  <div class="form day" id="dayBox"></div>
+  <h2 id="tripH"></h2>
   <div class="chips" id="favs"></div>
   <form class="form" id="tripForm" novalidate>
     <div class="grid g4">
@@ -236,7 +284,7 @@ footer p{margin:0 0 6px;max-width:75ch}
         </details>
       </div>
       <div class="full"><label class="check"><input type="checkbox" id="tFav"><span data-i="f_fav"></span></label></div>
-      <div class="full row"><button class="btn" type="submit" data-i="add_trip"></button></div>
+      <div class="full row"><button class="btn" type="submit" id="tSubmit"></button><button class="btn alt" type="button" id="tCancel" hidden></button></div>
     </div>
     <div id="tripMsg" role="status"></div>
   </form>
@@ -245,7 +293,7 @@ footer p{margin:0 0 6px;max-width:75ch}
 
 <!-- EXPENSES -->
 <section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp" hidden>
-  <h2 data-i="exp_h"></h2>
+  <h2 id="expH"></h2>
   <form class="form" id="expForm" novalidate>
     <div class="grid g4">
       <div><label for="eDate" data-i="f_date"></label><input type="date" id="eDate" required></div>
@@ -253,7 +301,8 @@ footer p{margin:0 0 6px;max-width:75ch}
       <div><label for="eAmt" data-i="f_amt"></label><input type="number" id="eAmt" inputmode="decimal" min="0" step="0.01"></div>
       <div class="full"><label for="eNote" data-i="f_note"></label><input type="text" id="eNote" maxlength="80" autocomplete="off"></div>
       <div class="full"><label class="check"><input type="checkbox" id="eTax"><span data-i="f_tax"></span></label></div>
-      <div class="full row"><button class="btn" type="submit" data-i="add_exp"></button><span class="muted small" id="eHint"></span></div>
+      <div class="full rcrow"><span class="lbl" data-i="rc_l"></span><button class="btn alt" type="button" id="bRc"></button><input type="file" id="fRc" accept="image/*" hidden><div class="rcprev" id="rcPrev"></div></div>
+      <div class="full row"><button class="btn" type="submit" id="eSubmit"></button><button class="btn alt" type="button" id="eCancel" hidden></button><span class="muted small" id="eHint"></span></div>
     </div>
     <div id="expMsg" role="status"></div>
   </form>
@@ -278,6 +327,7 @@ footer p{margin:0 0 6px;max-width:75ch}
   </div>
   <div id="sumWarn"></div>
   <div class="sum" id="sumBox"></div>
+  <div class="charts" id="charts"></div>
   <p class="muted small" data-i="sum_note" style="max-width:75ch"></p>
   <div class="row" style="margin-top:6px">
     <button class="btn" type="button" id="bPrint" data-i="b_print"></button>
@@ -338,6 +388,7 @@ footer p{margin:0 0 6px;max-width:75ch}
 </div>
 
 <div id="print"></div>
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true"><div class="vin"><img alt=""><button class="btn" type="button"></button></div></div>
 
 <script src="app.js"></script>
 </body>
