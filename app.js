@@ -35,11 +35,17 @@ fr:{
  b_print:"Imprimer le registre (PDF)", b_csvt:"Exporter les trajets (CSV)", b_csve:"Exporter les dépenses (CSV)", pro_only:"L'export fait partie de Pro. Va dans l'onglet Pro pour l'activer.",
  pro_h:"Gratuit ou Pro", free_t:"Gratuit", per_month:"par mois",
  free_list:["{n} trajets par mois","Dépenses illimitées","Sommaire de l'année à l'écran","Sauvegarde de tes données"],
- pro_list:["Trajets illimités","Registre imprimable en PDF","Export CSV pour ton comptable","Trajets fréquents en un clic","Taxes récupérables détaillées"],
+ pro_list:["Trajets illimités","Photo des reçus, jointe au PDF","Registre imprimable en PDF","Export CSV pour ton comptable","Trajets fréquents en un clic","Taxes récupérables détaillées"],
  buy:"S'abonner à Pro", launch:"Accès de lancement : toutes les fonctions Pro sont ouvertes pendant que l'abonnement se met en place.", pro_on:"Pro est actif sur cet appareil. Merci!", pro_off:"Tu utilises la version gratuite.",
  lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer Pro", lic_checking:"Vérification…", lic_ok:"Pro est activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour réactiver Pro.", lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
- bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone. La sauvegarde ne contient pas ta clé de licence : garde le courriel de Gumroad pour réactiver Pro.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
+ bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone. La sauvegarde contient tes trajets, tes dépenses et les photos de tes reçus, mais pas ta clé de licence : garde le courriel de Gumroad pour réactiver Pro.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
  faq_h:"Questions fréquentes",
+ day_h:"Ma journée", day_p:"Le matin, entre l'odomètre en partant. Le soir, entre celui à l'arrivée : le trajet se crée tout seul.",
+ day_o1:"Odomètre au départ", day_o2:"Odomètre à l'arrivée", day_to:"Secteur ou destination", day_start:"Démarrer ma journée", day_end:"Terminer ma journée", day_cancel:"Annuler la journée",
+ day_on:"Journée en cours depuis {t} · odomètre au départ {o}", day_err_o1:"Entre l'odomètre au départ.", day_err_o2:"Entre l'odomètre à l'arrivée.", day_done:"Journée terminée : {k} km ajoutés à ton registre.",
+ edit:"Modifier", dup:"Dupliquer", save_edit:"Enregistrer les modifications", cancel:"Annuler", trip_saved:"Trajet modifié.", exp_saved:"Dépense modifiée.", trip_dup:"Trajet copié à la date d'aujourd'hui.", exp_dup:"Dépense copiée à la date d'aujourd'hui.", editing:"Modification en cours",
+ rc_l:"Photo du reçu", rc_add:"Prendre ou choisir une photo", rc_change:"Changer la photo", rc_rm:"Retirer la photo", rc_pro:"La photo des reçus fait partie de Pro. Va dans l'onglet Pro pour l'activer.", rc_bad:"Impossible de lire cette image. Essaie une photo JPEG ou PNG.", rc_view:"Reçu", rc_close:"Fermer", rc_busy:"Préparation de la photo…", p_rc:"Reçus",
+ ch_km:"Km d'affaires par mois", ch_exp:"Dépenses par mois",
  faq:[
   ["Qu'est-ce qu'un registre de kilométrage doit contenir?","Pour chaque déplacement d'affaires : la date, la destination, le but du déplacement et le nombre de kilomètres parcourus. Note aussi l'odomètre de ton véhicule au début et à la fin de l'année, pour connaître ton kilométrage total. CarnetKM te demande exactement ces renseignements."],
   ["Je suis travailleur autonome. Est-ce que je peux déduire 0,73 $ du kilomètre?","Non. Ce taux (0,73 $ pour les 5 000 premiers kilomètres en 2026, puis 0,67 $) sert aux allocations qu'un employeur verse à ses employés. Un travailleur autonome déduit ses dépenses réelles de véhicule, multipliées par sa portion affaires : kilomètres d'affaires divisés par kilomètres totaux de l'année."],
@@ -80,11 +86,17 @@ en:{
  b_print:"Print the logbook (PDF)", b_csvt:"Export trips (CSV)", b_csve:"Export expenses (CSV)", pro_only:"Export is part of Pro. Open the Pro tab to turn it on.",
  pro_h:"Free or Pro", free_t:"Free", per_month:"per month",
  free_list:["{n} trips per month","Unlimited expenses","Year summary on screen","Backup of your data"],
- pro_list:["Unlimited trips","Printable PDF logbook","CSV export for your accountant","One-tap frequent trips","Detailed recoverable tax"],
+ pro_list:["Unlimited trips","Receipt photos, attached to the PDF","Printable PDF logbook","CSV export for your accountant","One-tap frequent trips","Detailed recoverable tax"],
  buy:"Subscribe to Pro", launch:"Launch access: every Pro feature is open while the subscription is being set up.", pro_on:"Pro is active on this device. Thank you!", pro_off:"You're on the free version.",
  lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate Pro", lic_checking:"Checking…", lic_ok:"Pro is activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate Pro.", lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
- bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones. The backup doesn't include your licence key: keep the Gumroad email to reactivate Pro.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
+ bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones. The backup holds your trips, expenses and receipt photos, but not your licence key: keep the Gumroad email to reactivate Pro.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
  faq_h:"Common questions",
+ day_h:"My day", day_p:"In the morning, enter the odometer as you leave. At night, enter it when you're back: the trip is created for you.",
+ day_o1:"Odometer at start", day_o2:"Odometer at end", day_to:"Area or destination", day_start:"Start my day", day_end:"End my day", day_cancel:"Cancel the day",
+ day_on:"Day started at {t} · start odometer {o}", day_err_o1:"Enter the start odometer.", day_err_o2:"Enter the end odometer.", day_done:"Day ended: {k} km added to your logbook.",
+ edit:"Edit", dup:"Duplicate", save_edit:"Save changes", cancel:"Cancel", trip_saved:"Trip updated.", exp_saved:"Expense updated.", trip_dup:"Trip copied to today's date.", exp_dup:"Expense copied to today's date.", editing:"Editing",
+ rc_l:"Receipt photo", rc_add:"Take or choose a photo", rc_change:"Change the photo", rc_rm:"Remove the photo", rc_pro:"Receipt photos are part of Pro. Open the Pro tab to turn it on.", rc_bad:"Can't read this image. Try a JPEG or PNG photo.", rc_view:"Receipt", rc_close:"Close", rc_busy:"Preparing the photo…", p_rc:"Receipts",
+ ch_km:"Business km per month", ch_exp:"Expenses per month",
  faq:[
   ["What does a mileage logbook need to contain?","For each business trip: the date, the destination, the purpose and the number of kilometres driven. Also record your vehicle's odometer at the start and end of the year so you know your total kilometres. CarnetKM asks for exactly these details."],
   ["I'm self-employed. Can I deduct $0.73 per kilometre?","No. That rate ($0.73 for the first 5,000 kilometres in 2026, then $0.67) is for allowances an employer pays to employees. A self-employed person deducts actual vehicle expenses multiplied by the business-use share: business kilometres divided by total kilometres for the year."],
@@ -115,7 +127,7 @@ const CATS = {
 
 /* ---------- state ---------- */
 const KEY = "carnetkm.v1";
-const blank = () => ({app:"carnetkm",v:1,lang:null,settings:{name:"",vehicle:"",prov:"QC",registered:false},odo:{},trips:[],expenses:[],favs:[],license:null});
+const blank = () => ({app:"carnetkm",v:1,lang:null,settings:{name:"",vehicle:"",prov:"QC",registered:false},odo:{},trips:[],expenses:[],favs:[],day:null,dayPrefs:{purpose:"",to:""},license:null});
 let S = blank();
 function load(){
   try{ const raw = localStorage.getItem(KEY); if(raw){ const o = JSON.parse(raw); if(o && o.app==="carnetkm"){
@@ -141,6 +153,10 @@ function sanitizeState(o, keepNullLang){
   clean.trips = (Array.isArray(o.trips)?o.trips:[]).filter(x=>x && okDate(x.date) && isFinite(+x.km) && +x.km>0).map(x=>({id:tid(x.id),date:x.date,type:x.type==="p"?"p":"b",from:str(x.from,80),to:str(x.to,80),purpose:str(x.purpose,80),km:round1(+x.km),o1:optNum(x.o1),o2:optNum(x.o2)}));
   clean.expenses = (Array.isArray(o.expenses)?o.expenses:[]).filter(x=>x && okDate(x.date) && isFinite(+x.amount) && +x.amount>0).map(x=>({id:eid(x.id),date:x.date,cat:Object.prototype.hasOwnProperty.call(CATS, x.cat)?x.cat:"othb",amount:Math.round(+x.amount*100)/100,taxIncl:!!x.taxIncl,note:str(x.note,80)}));
   clean.favs = (Array.isArray(o.favs)?o.favs:[]).filter(x=>x && isFinite(+x.km) && +x.km>0).slice(0,30).map(x=>({id:fid(x.id),from:str(x.from,80),to:str(x.to,80),purpose:str(x.purpose,80),km:round1(+x.km),type:x.type==="p"?"p":"b"}));
+  const d = o.day;
+  if(d && typeof d==="object" && okDate(d.date) && isFinite(+d.o1) && +d.o1>=0) clean.day = {date:d.date, t:(typeof d.t==="number"&&isFinite(d.t))?d.t:Date.now(), o1:+d.o1, purpose:str(d.purpose,80), to:str(d.to,80)};
+  const dp = (o.dayPrefs && typeof o.dayPrefs==="object") ? o.dayPrefs : {};
+  clean.dayPrefs = {purpose:str(dp.purpose,80), to:str(dp.to,80)};
   if(o.odo && typeof o.odo==="object") for(const y in o.odo){ if(/^\d{4}$/.test(y)){ const v=o.odo[y]||{}; clean.odo[y]={start:optNum(v.start),end:optNum(v.end)}; } }
   return clean;
 }
@@ -150,6 +166,43 @@ function sanitizeLicense(L){
 }
 // Sauvegarde exportée : tout sauf la licence (la clé reste sur cet appareil).
 function exportState(){ const o = JSON.parse(JSON.stringify(S)); delete o.license; return o; }
+
+/* ---------- photos des reçus (IndexedDB, sur l'appareil seulement) ---------- */
+const RC = new Set();                  // identifiants des dépenses qui ont une photo
+const RC_RE = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/, RC_MAX = 4e6;
+let dbP = null;
+function db(){
+  if(!dbP) dbP = new Promise((res, rej)=>{
+    if(!("indexedDB" in window)) return rej(new Error("no idb"));
+    const r = indexedDB.open("carnetkm", 1);
+    r.onupgradeneeded = ()=> r.result.createObjectStore("receipts");
+    r.onsuccess = ()=> res(r.result); r.onerror = ()=> rej(r.error);
+  });
+  return dbP;
+}
+async function idb(mode, fn){
+  const d = await db();
+  return new Promise((res, rej)=>{ const tx = d.transaction("receipts", mode); const st = tx.objectStore("receipts"); const r = fn(st);
+    tx.oncomplete = ()=> res(r && r.result); tx.onerror = ()=> rej(tx.error); tx.onabort = ()=> rej(tx.error); });
+}
+const rcGet = id => idb("readonly", st => st.get(id));
+const rcPut = (id, url) => idb("readwrite", st => st.put(url, id)).then(()=>RC.add(id));
+const rcDel = id => idb("readwrite", st => st.delete(id)).then(()=>RC.delete(id));
+async function rcLoadKeys(){ try{ const ks = await idb("readonly", st => st.getAllKeys()); RC.clear(); (ks||[]).forEach(k=>RC.add(k)); }catch(e){} }
+// Photo réduite (1400 px max, JPEG) pour rester légère sur le téléphone et dans la sauvegarde.
+function shrink(file){
+  return new Promise((res, rej)=>{
+    const fr = new FileReader();
+    fr.onerror = ()=> rej(fr.error);
+    fr.onload = ()=>{ const img = new Image(); img.onerror = ()=> rej(new Error("img"));
+      img.onload = ()=>{ const M = 1400, k = Math.min(1, M/Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(img.naturalWidth*k)); c.height = Math.max(1, Math.round(img.naturalHeight*k));
+        const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0,0,c.width,c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        res(c.toDataURL("image/jpeg", 0.72)); };
+      img.src = fr.result; };
+    fr.readAsDataURL(file);
+  });
+}
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -256,7 +309,10 @@ function renderTrips(){
         g.map(x=>'<div class="item"><div class="d">'+esc(dayLabel(x.date))+'</div><div><div class="t">'+
           esc([x.from,x.to].filter(Boolean).join(" → ")||x.purpose||"—")+(x.type==="p"?'<span class="tag p">'+esc(t("perso"))+'</span>':'')+'</div>'+
           '<div class="s">'+esc(x.purpose && (x.from||x.to) ? x.purpose : "")+(x.o1!=null&&x.o2!=null?' <span>('+esc(x.o1)+' – '+esc(x.o2)+')</span>':'')+'</div></div>'+
-          '<div><div class="v">'+nKm(x.km)+' km</div><button class="del" type="button" data-del-trip="'+esc(x.id)+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
+          '<div><div class="v">'+nKm(x.km)+' km</div></div><div class="acts">'+
+          '<button class="del" type="button" data-edit-trip="'+esc(x.id)+'">'+esc(t("edit"))+'</button>'+
+          '<button class="del" type="button" data-dup-trip="'+esc(x.id)+'">'+esc(t("dup"))+'</button>'+
+          '<button class="del" type="button" data-del-trip="'+esc(x.id)+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
     }).join("");
   }
   const f = $("favs");
@@ -270,8 +326,12 @@ function renderExp(){
   $("expList").innerHTML = Object.keys(groups).sort().reverse().map(ym=>{
     const g = groups[ym]; const s = g.reduce((a,x)=>a+x.amount,0);
     return '<div class="month"><div class="month-h"><b>'+esc(monthLabel(ym))+'</b><span class="muted">'+nMoney(s)+'</span></div>'+
-      g.map(x=>'<div class="item"><div class="d">'+esc(dayLabel(x.date))+'</div><div><div class="t">'+esc(T[S.lang].cats[x.cat]||x.cat)+'</div><div class="s">'+esc(x.note||"")+'</div></div>'+
-        '<div><div class="v">'+nMoney(x.amount)+'</div><button class="del" type="button" data-del-exp="'+esc(x.id)+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
+      g.map(x=>'<div class="item"><div class="d">'+esc(dayLabel(x.date))+'</div><div><div class="t">'+esc(T[S.lang].cats[x.cat]||x.cat)+
+        (RC.has(x.id)?' <button class="rcchip" type="button" data-rc="'+esc(x.id)+'">'+esc(t("rc_view"))+'</button>':'')+'</div><div class="s">'+esc(x.note||"")+'</div></div>'+
+        '<div><div class="v">'+nMoney(x.amount)+'</div></div><div class="acts">'+
+        '<button class="del" type="button" data-edit-exp="'+esc(x.id)+'">'+esc(t("edit"))+'</button>'+
+        '<button class="del" type="button" data-dup-exp="'+esc(x.id)+'">'+esc(t("dup"))+'</button>'+
+        '<button class="del" type="button" data-del-exp="'+esc(x.id)+'">'+esc(t("del"))+'</button></div></div>').join("")+'</div>';
   }).join("");
 }
 function renderSum(){
@@ -302,7 +362,115 @@ function renderSum(){
   }
   $("sumBox").innerHTML = rows.map(r=>'<div><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join("")+
     '<div class="big"><span>'+esc(t("s_ded"))+'</span><b>'+esc(nMoney(c.ded))+'</b></div>';
+  renderCharts(c);
 }
+
+/* ---------- graphiques mensuels (une série, une échelle par graphique) ---------- */
+function niceMax(v){ if(v<=0) return 1; const p = Math.pow(10, Math.floor(Math.log10(v))); for(const m of [1,2,2.5,5,10]) if(m*p >= v) return m*p; return 10*p; }
+function barChart(title, vals, fmt, cls){
+  const W=360, H=170, L=8, R=8, Tp=26, B=22, iw=W-L-R, ih=H-Tp-B, bw=iw/12, max=niceMax(Math.max(...vals));
+  const months = [...Array(12)].map((_,i)=> new Date(2026,i,1).toLocaleDateString(loc(),{month:"narrow"}).toUpperCase());
+  const full = [...Array(12)].map((_,i)=> new Date(2026,i,1).toLocaleDateString(loc(),{month:"long"}));
+  let g = '';
+  [0.5,1].forEach(f=>{ const y = Tp+ih-ih*f; g += '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" class="gl"/><text x="'+L+'" y="'+(y-4)+'" class="tk">'+esc(fmt(max*f))+'</text>'; });
+  g += '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+(Tp+ih)+'" y2="'+(Tp+ih)+'" class="base"/>';
+  vals.forEach((v,i)=>{
+    const x = L+i*bw+bw*0.18, w = bw*0.64, h = v>0 ? Math.max(2, ih*v/max) : 0, y = Tp+ih-h, r = Math.min(4, w/2, h);
+    const lbl = full[i]+" : "+fmt(v);
+    g += '<g class="bar" tabindex="0" aria-label="'+esc(lbl)+'"><title>'+esc(lbl)+'</title><rect x="'+(L+i*bw)+'" y="'+Tp+'" width="'+bw+'" height="'+ih+'" class="hit"/>'+
+      (h ? '<path class="'+cls+'" d="M'+x+','+(Tp+ih)+'V'+(y+r)+'Q'+x+','+y+' '+(x+r)+','+y+'H'+(x+w-r)+'Q'+(x+w)+','+y+' '+(x+w)+','+(y+r)+'V'+(Tp+ih)+'Z"/>' : '')+
+      '<text x="'+(L+i*bw+bw/2)+'" y="'+(H-6)+'" class="mo">'+esc(months[i])+'</text></g>';
+  });
+  return '<figure class="chart"><figcaption>'+esc(title)+'</figcaption><svg viewBox="0 0 '+W+' '+H+'" role="group" aria-label="'+esc(title)+'">'+g+'</svg></figure>';
+}
+function renderCharts(c){
+  const km = Array(12).fill(0), ex = Array(12).fill(0);
+  c.trips.forEach(x=>{ if(x.type==="b") km[+x.date.slice(5,7)-1] += x.km; });
+  c.exps.forEach(x=>{ ex[+x.date.slice(5,7)-1] += x.amount; });
+  const kmF = v => new Intl.NumberFormat(loc(),{maximumFractionDigits:0}).format(v)+" km";
+  const moF = v => new Intl.NumberFormat(loc(),{style:"currency",currency:"CAD",maximumFractionDigits:0}).format(v);
+  $("charts").innerHTML = barChart(t("ch_km"), km.map(round1), kmF, "bk") + barChart(t("ch_exp"), ex, moF, "be");
+}
+
+/* ---------- ma journée ---------- */
+function lastOdo(){ let best = null; S.trips.forEach(x=>{ if(x.o2!=null && (best==null || x.date > best.date || (x.date===best.date && x.o2 > best.o2))) best = x; }); return best ? best.o2 : null; }
+function renderDay(){
+  const box = $("dayBox"), keep = id => $(id) ? $(id).value : null;
+  const prev = {o1:keep("dO1"), o2:keep("dO2"), p:keep("dPurpose"), to:keep("dTo")};
+  const D = S.day;
+  let h = '<h3>'+esc(t("day_h"))+'</h3>';
+  if(!D){
+    const lo = lastOdo();
+    h += '<p class="muted small" style="margin:0 0 10px">'+esc(t("day_p"))+'</p><div class="grid g4">'+
+      '<div><label for="dO1">'+esc(t("day_o1"))+'</label><input type="number" id="dO1" inputmode="numeric" min="0" step="1" value="'+esc(prev.o1!=null?prev.o1:(lo!=null?lo:""))+'"></div>'+
+      '<div class="half" style="grid-column:span 2"><label for="dPurpose">'+esc(t("f_purpose"))+'</label><input type="text" id="dPurpose" list="purposes" maxlength="80" autocomplete="off" value="'+esc(prev.p!=null?prev.p:(S.dayPrefs.purpose||T[S.lang].purposes[4]))+'"></div>'+
+      '<div style="align-self:end"><button class="btn lane" type="button" id="bDayStart" style="width:100%">'+esc(t("day_start"))+'</button></div></div>';
+  } else {
+    const hm = new Date(D.t).toLocaleTimeString(loc(),{hour:"2-digit",minute:"2-digit"});
+    h += '<div class="daylive"><span class="dot" aria-hidden="true"></span>'+esc(t("day_on",{t:hm,o:new Intl.NumberFormat(loc()).format(D.o1)}))+'</div>'+
+      '<div class="grid g4" style="margin-top:10px">'+
+      '<div><label for="dO2">'+esc(t("day_o2"))+'</label><input type="number" id="dO2" inputmode="numeric" min="0" step="1" value="'+esc(prev.o2!=null?prev.o2:"")+'"></div>'+
+      '<div class="half" style="grid-column:span 2"><label for="dTo">'+esc(t("day_to"))+'</label><input type="text" id="dTo" maxlength="80" autocomplete="off" value="'+esc(prev.to!=null?prev.to:(D.to||S.dayPrefs.to||""))+'"></div>'+
+      '<div style="align-self:end"><button class="btn" type="button" id="bDayEnd" style="width:100%">'+esc(t("day_end"))+'</button></div></div>'+
+      '<button class="del" type="button" id="bDayCancel" style="margin:8px 0 0">'+esc(t("day_cancel"))+'</button>';
+  }
+  box.innerHTML = h + '<div id="dayMsg" role="status"></div>';
+}
+function dayStart(){
+  const o1 = num($("dO1").value), purpose = $("dPurpose").value.trim();
+  if(o1==null || o1<0) return flash($("dayMsg"),"err",t("day_err_o1"));
+  if(!purpose) return flash($("dayMsg"),"err",t("err_purpose"));
+  S.day = {date:today(), t:Date.now(), o1, purpose, to:S.dayPrefs.to||""}; S.dayPrefs.purpose = purpose; save(); renderDay();
+}
+function dayEnd(){
+  const D = S.day, o2 = num($("dO2").value), to = $("dTo").value.trim(), m = $("dayMsg");
+  if(o2==null) return flash(m,"err",t("day_err_o2"));
+  if(o2<=D.o1) return flash(m,"err",t("err_odo"));
+  if(!to) return flash(m,"err",t("err_dest"));
+  if(!isPro() && monthCount(D.date.slice(0,7)) >= CONFIG.freeTripsPerMonth) return flash(m,"warn",t("limit",{n:CONFIG.freeTripsPerMonth}));
+  const km = round1(o2-D.o1);
+  S.trips.push({id:uid(),date:D.date,type:"b",from:"",to,purpose:D.purpose,km,o1:D.o1,o2});
+  S.dayPrefs.to = to; S.day = null; save();
+  renderDay(); renderTrips(); renderSum(); renderHero(); flash($("dayMsg"),"ok",t("day_done",{k:nKm(km)}));
+}
+const monthCount = (ym, exceptId) => S.trips.filter(x=>x.date.slice(0,7)===ym && x.id!==exceptId).length;
+
+/* ---------- mode modification ---------- */
+let editTrip = null, editExp = null, pendingRc = undefined;   // pendingRc : undefined = inchangé, "" = retirer, sinon photo
+function setEditUI(){
+  $("tSubmit").textContent = t(editTrip ? "save_edit" : "add_trip"); $("tCancel").hidden = !editTrip; $("tCancel").textContent = t("cancel");
+  $("eSubmit").textContent = t(editExp ? "save_edit" : "add_exp"); $("eCancel").hidden = !editExp; $("eCancel").textContent = t("cancel");
+  $("tripForm").classList.toggle("editing", !!editTrip); $("expForm").classList.toggle("editing", !!editExp);
+  $("tripH").textContent = t(editTrip ? "editing" : "trips_h"); $("expH").textContent = t(editExp ? "editing" : "exp_h");
+}
+async function renderRcPreview(){
+  const box = $("rcPrev"), id = editExp; let url = null;
+  if(typeof pendingRc === "string" && pendingRc) url = pendingRc;
+  else if(pendingRc === undefined && id && RC.has(id)){ try{ url = await rcGet(id); }catch(e){} }
+  $("bRc").textContent = t(url ? "rc_change" : "rc_add") + (isPro() ? "" : " · Pro");
+  box.innerHTML = url ? '<img src="'+esc(url)+'" alt="'+esc(t("rc_l"))+'"><button class="del" type="button" id="bRcRm">'+esc(t("rc_rm"))+'</button>' : "";
+}
+function resetTripForm(){ editTrip = null; ["tFrom","tTo","tPurpose","tKm","tO1","tO2"].forEach(i=>$(i).value=""); $("tFav").checked=false; $("tDate").value = today(); setEditUI(); }
+function resetExpForm(){ editExp = null; pendingRc = undefined; $("eAmt").value=""; $("eNote").value=""; $("eDate").value = today(); setEditUI(); renderRcPreview(); }
+function startEditTrip(id){
+  const x = S.trips.find(v=>v.id===id); if(!x) return;
+  editTrip = id; $("tDate").value = x.date; document.querySelector('input[name=tType][value="'+x.type+'"]').checked = true;
+  $("tFrom").value = x.from; $("tTo").value = x.to; $("tPurpose").value = x.purpose; $("tKm").value = x.km;
+  $("tO1").value = x.o1==null?"":x.o1; $("tO2").value = x.o2==null?"":x.o2; if(x.o1!=null) $("tripForm").querySelector("details").open = true;
+  $("tFav").checked = false; $("tripMsg").innerHTML = ""; setEditUI(); $("tripH").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function startEditExp(id){
+  const x = S.expenses.find(v=>v.id===id); if(!x) return;
+  editExp = id; pendingRc = undefined; $("eDate").value = x.date; $("eCat").value = x.cat; $("eAmt").value = x.amount; $("eNote").value = x.note; $("eTax").checked = x.taxIncl;
+  expHint(); $("expMsg").innerHTML = ""; setEditUI(); renderRcPreview(); $("expH").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---------- visionneuse de reçu ---------- */
+async function openReceipt(id){
+  let url = null; try{ url = await rcGet(id); }catch(e){} if(!url) return;
+  const v = $("viewer"); v.querySelector("img").src = url; v.querySelector("button").textContent = t("rc_close"); v.hidden = false; v.querySelector("button").focus();
+}
+function closeReceipt(){ const v = $("viewer"); v.hidden = true; v.querySelector("img").removeAttribute("src"); }
 function renderHero(){
   const y = new Date().getFullYear(); const c = calc(y);
   $("odoCap").textContent = t("odo_cap",{y});
@@ -318,7 +486,7 @@ function renderPro(){
   $("buyBox").innerHTML = configured() && !licenseActive() ? '<a class="btn lane" style="display:inline-block;text-decoration:none" href="'+esc(CONFIG.gumroadUrl)+'" target="_blank" rel="noopener">'+esc(t("buy"))+'</a>' : (configured() ? "" : '<span class="badge">'+esc(S.lang==="fr"?"Bientôt":"Coming soon")+'</span>');
   $("licBox").style.display = configured() && !licenseActive() ? "" : "none";
 }
-function renderAll(){ applyStrings(); renderTrips(); renderExp(); renderSum(); renderHero(); renderPro(); expHint(); }
+function renderAll(){ applyStrings(); setEditUI(); renderDay(); renderTrips(); renderExp(); renderSum(); renderHero(); renderPro(); expHint(); renderRcPreview(); }
 function flash(el, cls, text){ el.innerHTML = '<div class="msg '+cls+'">'+esc(text)+'</div>'; if(cls==="ok") setTimeout(()=>{ if(el.firstChild && el.firstChild.classList.contains("ok")) el.innerHTML=""; }, 3500); }
 function expHint(){ const c = CATS[$("eCat").value]; $("eHint").textContent = c ? t(c.m==="p"?"hint_pro":"hint_full") : ""; }
 
@@ -334,26 +502,32 @@ function addTrip(ev){
   if(km==null || km<=0) return flash(m,"err",t("err_km"));
   if(type==="b" && !to) return flash(m,"err",t("err_dest"));
   if(type==="b" && !purpose) return flash(m,"err",t("err_purpose"));
-  if(!isPro()){
-    const n = S.trips.filter(x=>x.date.slice(0,7)===date.slice(0,7)).length;
-    if(n >= CONFIG.freeTripsPerMonth) return flash(m,"warn",t("limit",{n:CONFIG.freeTripsPerMonth}));
+  const old = editTrip ? S.trips.find(x=>x.id===editTrip) : null;
+  if(!isPro() && (!old || old.date.slice(0,7)!==date.slice(0,7))){
+    if(monthCount(date.slice(0,7), old && old.id) >= CONFIG.freeTripsPerMonth) return flash(m,"warn",t("limit",{n:CONFIG.freeTripsPerMonth}));
   }
   km = round1(km);
-  S.trips.push({id:uid(),date,type,from,to,purpose,km,o1:(o1!=null&&o2!=null)?o1:null,o2:(o1!=null&&o2!=null)?o2:null});
+  const rec = {id:old?old.id:uid(),date,type,from,to,purpose,km,o1:(o1!=null&&o2!=null)?o1:null,o2:(o1!=null&&o2!=null)?o2:null};
+  if(old) S.trips[S.trips.indexOf(old)] = rec; else S.trips.push(rec);
   if($("tFav").checked && isPro() && !S.favs.some(f=>f.from===from&&f.to===to&&f.purpose===purpose&&f.km===km)) S.favs.push({id:uid(),from,to,purpose,km,type});
   save();
-  ["tFrom","tTo","tPurpose","tKm","tO1","tO2"].forEach(i=>$(i).value=""); $("tFav").checked=false;
-  renderTrips(); renderSum(); renderHero(); flash(m,"ok",t("trip_added"));
+  resetTripForm();
+  renderTrips(); renderSum(); renderHero(); flash(m,"ok",t(old?"trip_saved":"trip_added"));
 }
-function addExp(ev){
+async function addExp(ev){
   ev.preventDefault();
   const date = $("eDate").value, cat = $("eCat").value, amount = num($("eAmt").value), note = $("eNote").value.trim();
   const m = $("expMsg");
   if(!date) return flash(m,"err",t("err_date"));
   if(amount==null || amount<=0) return flash(m,"err",t("err_amt"));
-  S.expenses.push({id:uid(),date,cat,amount:Math.round(amount*100)/100,taxIncl:$("eTax").checked,note});
-  save(); $("eAmt").value=""; $("eNote").value="";
-  renderExp(); renderSum(); flash(m,"ok",t("exp_added"));
+  const old = editExp ? S.expenses.find(x=>x.id===editExp) : null;
+  const rec = {id:old?old.id:uid(),date,cat,amount:Math.round(amount*100)/100,taxIncl:$("eTax").checked,note};
+  if(old) S.expenses[S.expenses.indexOf(old)] = rec; else S.expenses.push(rec);
+  save();
+  const rc = pendingRc;
+  try{ if(typeof rc==="string" && rc) await rcPut(rec.id, rc); else if(rc==="" && RC.has(rec.id)) await rcDel(rec.id); }catch(e){}
+  resetExpForm();
+  renderExp(); renderSum(); flash(m,"ok",t(old?"exp_saved":"exp_added"));
 }
 function csvCell(v){ v = String(v==null?"":v); if(/^[=+\-@\t\r]/.test(v)) v = "'"+v; return '"'+v.replace(/"/g,'""')+'"'; }
 function download(name, text, type){
@@ -373,7 +547,7 @@ function csvExp(){
   [...c.exps].sort((a,b)=>a.date.localeCompare(b.date)).forEach(x=>rows.push([x.date,T[S.lang].cats[x.cat]||x.cat,x.amount.toFixed(2),x.taxIncl?t("yes"):t("no"),x.note]));
   download("carnetkm-depenses-"+year+".csv","﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n"),"text/csv;charset=utf-8");
 }
-function printLog(){
+async function printLog(){
   if(needPro()) return;
   const c = calc(year), o = S.odo[year]||{};
   const trips = [...c.trips].sort((a,b)=>a.date.localeCompare(b.date));
@@ -385,6 +559,15 @@ function printLog(){
     '<table><thead><tr><th>'+esc(t("c_date"))+'</th><th>'+esc(t("c_type"))+'</th><th>'+esc(t("c_from"))+'</th><th>'+esc(t("c_to"))+'</th><th>'+esc(t("c_purpose"))+'</th><th class="n">'+esc(t("c_o1"))+'</th><th class="n">'+esc(t("c_o2"))+'</th><th class="n">'+esc(t("c_km"))+'</th></tr></thead><tbody>'+
     trips.map(x=>'<tr><td>'+esc(x.date)+'</td><td>'+esc(x.type==="b"?t("type_b"):t("type_p"))+'</td><td>'+esc(x.from)+'</td><td>'+esc(x.to)+'</td><td>'+esc(x.purpose)+'</td><td class="n">'+esc(x.o1)+'</td><td class="n">'+esc(x.o2)+'</td><td class="n">'+nKm(x.km)+'</td></tr>').join("")+
     '</tbody></table><div class="foot">'+esc(t("p_gen",{d:new Date().toLocaleDateString(loc())}))+'</div>';
+  // Reçus de l'année, un par bloc, après le registre.
+  const withRc = [...c.exps].filter(x=>RC.has(x.id)).sort((a,b)=>a.date.localeCompare(b.date));
+  if(withRc.length){
+    let h = '<h2 class="rch">'+esc(t("p_rc"))+' '+year+'</h2>';
+    for(const x of withRc){ let url = null; try{ url = await rcGet(x.id); }catch(e){}
+      if(url && RC_RE.test(url)) h += '<figure class="rcp"><figcaption>'+esc(x.date+" · "+(T[S.lang].cats[x.cat]||x.cat)+" · "+nMoney(x.amount)+(x.note?" · "+x.note:""))+'</figcaption><img src="'+esc(url)+'" alt=""></figure>'; }
+    $("print").insertAdjacentHTML("beforeend", h);
+    await Promise.all([...$("print").querySelectorAll("img")].map(i=>i.decode().catch(()=>{})));
+  }
   window.print();
 }
 
@@ -444,11 +627,24 @@ function init(){
     ["trips","exp","sum","pro"].forEach(k=>{ $("p-"+k).hidden = k!==b.dataset.tab; });
   }));
   document.addEventListener("click", ev=>{
-    const el = ev.target.closest("[data-del-trip],[data-del-exp],[data-fav],#licRm"); if(!el) return;
+    const el = ev.target.closest("[data-del-trip],[data-del-exp],[data-fav],#licRm,[data-edit-trip],[data-edit-exp],[data-dup-trip],[data-dup-exp],[data-rc],#bRcRm,#bDayStart,#bDayEnd,#bDayCancel"); if(!el) return;
+    if(el.dataset.editTrip) return startEditTrip(el.dataset.editTrip);
+    if(el.dataset.editExp) return startEditExp(el.dataset.editExp);
+    if(el.dataset.rc) return openReceipt(el.dataset.rc);
+    if(el.id==="bRcRm"){ pendingRc = ""; return renderRcPreview(); }
+    if(el.id==="bDayStart") return dayStart();
+    if(el.id==="bDayEnd") return dayEnd();
+    if(el.id==="bDayCancel"){ S.day = null; save(); return renderDay(); }
+    if(el.dataset.dupTrip){ const x = S.trips.find(v=>v.id===el.dataset.dupTrip); if(!x) return; const d = today();
+      if(!isPro() && monthCount(d.slice(0,7)) >= CONFIG.freeTripsPerMonth) return flash($("tripMsg"),"warn",t("limit",{n:CONFIG.freeTripsPerMonth}));
+      S.trips.push({...x, id:uid(), date:d}); save(); renderTrips(); renderSum(); renderHero(); flash($("tripMsg"),"ok",t("trip_dup")); $("tripMsg").scrollIntoView({block:"nearest"}); return; }
+    if(el.dataset.dupExp){ const x = S.expenses.find(v=>v.id===el.dataset.dupExp); if(!x) return;
+      S.expenses.push({...x, id:uid(), date:today()}); save(); renderExp(); renderSum(); flash($("expMsg"),"ok",t("exp_dup")); $("expMsg").scrollIntoView({block:"nearest"}); return; }
     if((el.dataset.delTrip||el.dataset.delExp) && !el.dataset.armed){ el.dataset.armed="1"; el.textContent=t("del_sure"); el.style.color="var(--alert)"; el.style.fontWeight="600";
       setTimeout(()=>{ if(el.isConnected){ delete el.dataset.armed; el.textContent=t("del"); el.style.color=""; el.style.fontWeight=""; } }, 4000); return; }
-    if(el.dataset.delTrip){ S.trips = S.trips.filter(x=>x.id!==el.dataset.delTrip); save(); renderTrips(); renderSum(); renderHero(); }
-    else if(el.dataset.delExp){ S.expenses = S.expenses.filter(x=>x.id!==el.dataset.delExp); save(); renderExp(); renderSum(); }
+    if(el.dataset.delTrip){ const id = el.dataset.delTrip; S.trips = S.trips.filter(x=>x.id!==id); if(editTrip===id) resetTripForm(); save(); renderTrips(); renderSum(); renderHero(); }
+    else if(el.dataset.delExp){ const id = el.dataset.delExp; S.expenses = S.expenses.filter(x=>x.id!==id); if(editExp===id) resetExpForm(); save();
+      if(RC.has(id)) rcDel(id).catch(()=>{}).then(()=>renderExp()); renderExp(); renderSum(); }
     else if(el.dataset.fav){ const f = S.favs.find(x=>x.id===el.dataset.fav); if(f){ $("tFrom").value=f.from; $("tTo").value=f.to; $("tPurpose").value=f.purpose; $("tKm").value=f.km; $("tKm").focus(); } }
     else if(el.id==="licRm"){ S.license = null; save(); renderAll(); }
   });
@@ -461,21 +657,43 @@ function init(){
   $("sReg").addEventListener("change", ()=>{ S.settings.registered = $("sReg").checked; save(); renderSum(); });
   $("bPrint").addEventListener("click", printLog); $("bCsvT").addEventListener("click", csvTrips); $("bCsvE").addEventListener("click", csvExp);
   $("bLic").addEventListener("click", activate);
-  $("bBackup").addEventListener("click", ()=> download("carnetkm-sauvegarde-"+today()+".json", JSON.stringify(exportState(),null,1), "application/json"));
+  $("tCancel").addEventListener("click", ()=>{ resetTripForm(); $("tripMsg").innerHTML=""; });
+  $("eCancel").addEventListener("click", ()=>{ resetExpForm(); $("expMsg").innerHTML=""; });
+  $("bRc").addEventListener("click", ()=>{ if(!isPro()) return flash($("expMsg"),"warn",t("rc_pro")); $("fRc").click(); });
+  $("fRc").addEventListener("change", async ev=>{
+    const f = ev.target.files[0]; ev.target.value = ""; if(!f) return;
+    flash($("expMsg"),"warn",t("rc_busy"));
+    try{ const u = await shrink(f); if(!RC_RE.test(u) || u.length >= RC_MAX) throw 0; pendingRc = u; $("expMsg").innerHTML = ""; renderRcPreview(); }
+    catch(e){ flash($("expMsg"),"err",t("rc_bad")); }
+  });
+  $("viewer").addEventListener("click", ev=>{ if(ev.target.id==="viewer" || ev.target.tagName==="BUTTON") closeReceipt(); });
+  document.addEventListener("keydown", ev=>{ if(ev.key==="Escape" && !$("viewer").hidden) closeReceipt(); });
+  $("bBackup").addEventListener("click", async ()=>{
+    const o = exportState(); o.receipts = {};
+    for(const id of RC){ if(!S.expenses.some(x=>x.id===id)) continue; try{ const u = await rcGet(id); if(u) o.receipts[id] = u; }catch(e){} }
+    download("carnetkm-sauvegarde-"+today()+".json", JSON.stringify(o), "application/json");
+  });
   $("bRestore").addEventListener("click", ()=> $("fRestore").click());
   $("fRestore").addEventListener("change", ev=>{
     const f = ev.target.files[0]; if(!f) return; const rd = new FileReader();
     rd.onload = ()=>{ try{ const o = JSON.parse(rd.result);
         if(!o || o.app!=="carnetkm" || !Array.isArray(o.trips) || !Array.isArray(o.expenses)) throw 0;
         const clean = sanitizeState(o, false);   // C1 : identifiants validés/régénérés, champs bornés
+        // Photos : seulement des JPEG en base64, d'une taille raisonnable, rattachées à une dépense conservée telle quelle.
+        const keepIds = new Set(clean.expenses.map(x=>x.id)), srcIds = new Set((o.expenses||[]).map(x=>x && x.id));
+        const rcs = {}; if(o.receipts && typeof o.receipts==="object") for(const k in o.receipts){ const u = o.receipts[k];
+          if(keepIds.has(k) && srcIds.has(k) && typeof u==="string" && u.length < RC_MAX && RC_RE.test(u)) rcs[k] = u; }
         const box = $("bkMsg");
         box.innerHTML = '<div class="msg warn">'+esc(t("bk_confirm"))+' <span class="muted">('+clean.trips.length+' / '+clean.expenses.length+')</span><div class="row" style="margin-top:8px"><button class="btn" type="button" id="bkYes">'+esc(t("bk_yes"))+'</button><button class="btn alt" type="button" id="bkNo">'+esc(t("bk_no"))+'</button></div></div>';
-        $("bkYes").onclick = ()=>{ clean.license = S.license; S = clean; save(); renderAll(); flash(box,"ok",t("bk_ok")); };
+        $("bkYes").onclick = async ()=>{ clean.license = S.license; S = clean; save();
+          try{ await idb("readwrite", st => st.clear()); RC.clear(); for(const k in rcs) await rcPut(k, rcs[k]); }catch(e){}
+          editTrip = null; editExp = null; pendingRc = undefined; renderAll(); flash(box,"ok",t("bk_ok")); };
         $("bkNo").onclick = ()=>{ box.innerHTML=""; };
       }catch(e){ flash($("bkMsg"),"err",t("bk_bad")); } ev.target.value=""; };
     rd.readAsText(f);
   });
   recheck();
+  rcLoadKeys().then(()=>{ renderExp(); });
   if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 }
 init();
