@@ -1,5 +1,5 @@
 // CarnetKM – cache hors ligne. Réseau d'abord pour la page (mises à jour rapides), cache en secours.
-const CACHE = "carnetkm-v6";
+const CACHE = "carnetkm-v7";
 const FILES = ["./", "index.html", "app.js", "manifest.json", "icon.svg",
   "fonts/barlow-latin-400-normal.woff2", "fonts/barlow-latin-500-normal.woff2", "fonts/barlow-latin-600-normal.woff2",
   "fonts/barlow-condensed-latin-500-normal.woff2", "fonts/barlow-condensed-latin-600-normal.woff2", "fonts/barlow-condensed-latin-700-normal.woff2"];

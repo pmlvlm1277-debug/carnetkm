@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.gumroad.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://api.gumroad.com https://api.frankfurter.dev; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>CarnetKM – Registre de kilométrage pour livreurs et travailleurs autonomes</title>
 <meta name="description" content="Registre de kilométrage et de dépenses d'auto pour livreurs, chauffeurs et travailleurs autonomes au Québec et au Canada. Sans GPS, sans compte. Prêt pour ta déclaration et pour ton comptable.">
@@ -156,6 +156,7 @@ details.more summary{cursor:pointer;font-weight:500;font-size:15.5px;color:var(-
 .plan.pro{border:2px solid var(--ink)}
 .plan .price{font:700 40px/1 var(--f-sign);margin:6px 0 10px}
 .plan .price small{font:500 17px var(--f-body);color:var(--slate)}
+.plan .cad{font:600 19px/1.2 var(--f-sign);color:var(--sign-deep);margin-top:-4px}
 .plan ul{margin:0 0 14px;padding-left:20px}
 .plan li{margin:4px 0}
 .badge{display:inline-block;background:var(--lane);color:var(--ink);font-weight:600;font-size:14px;border-radius:4px;padding:2px 8px}
@@ -359,6 +360,8 @@ footer p{margin:0 0 6px;max-width:75ch}
     <div class="plan pro">
       <h3>Pro</h3>
       <div class="price"><span id="proPrice"></span> <small data-i="per_month"></small></div>
+      <div class="cad" id="proCad"></div>
+      <p class="muted small" id="proFxNote" style="margin:4px 0 12px"></p>
       <ul id="proList"></ul>
       <div id="buyBox"></div>
     </div>

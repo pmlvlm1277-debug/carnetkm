@@ -4,7 +4,9 @@
 const CONFIG = {
   gumroadProductId: "DHMf78a9yPLxm2vB_mFe_w==",   // ID du produit Gumroad (onglet « Content » ou « Advanced » du produit)
   gumroadUrl: "https://sharplaughs.gumroad.com/l/jutmvh",         // lien d'achat, ex. https://sharplaughs.gumroad.com/l/carnetkm
-  price: { fr: "4,99 $", en: "$4.99" },
+  priceUsd: 3.49,                                  // prix réel de l'abonnement sur Gumroad (facturé en dollars US)
+  fxUrl: "https://api.frankfurter.dev/v1/latest?base=USD&symbols=CAD",   // taux de la Banque centrale européenne, mis à jour chaque jour ouvrable
+  fxDefault: 1.42,                                 // taux de secours si le service ne répond pas
   freeTripsPerMonth: 12
 };
 
@@ -36,6 +38,7 @@ fr:{
  pro_h:"Gratuit ou Pro", free_t:"Gratuit", per_month:"par mois",
  free_list:["{n} trajets par mois","Dépenses illimitées","Sommaire de l'année à l'écran","Sauvegarde de tes données"],
  pro_list:["Trajets illimités","Photo des reçus, jointe au PDF","Registre imprimable en PDF","Export CSV pour ton comptable","Trajets fréquents en un clic","Taxes récupérables détaillées"],
+ fx_day:"≈ {c} au taux du {d}", fx_approx:"≈ {c} (taux approximatif)", fx_note:"Gumroad facture en dollars américains. Ta banque fait la conversion et peut ajouter des frais.",
  buy:"S'abonner à Pro", launch:"Accès de lancement : toutes les fonctions Pro sont ouvertes pendant que l'abonnement se met en place.", pro_on:"Pro est actif sur cet appareil. Merci!", pro_off:"Tu utilises la version gratuite.",
  lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer Pro", lic_checking:"Vérification…", lic_ok:"Pro est activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour réactiver Pro.", lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
  bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone. La sauvegarde contient tes trajets, tes dépenses et les photos de tes reçus, mais pas ta clé de licence : garde le courriel de Gumroad pour réactiver Pro.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
@@ -87,6 +90,7 @@ en:{
  pro_h:"Free or Pro", free_t:"Free", per_month:"per month",
  free_list:["{n} trips per month","Unlimited expenses","Year summary on screen","Backup of your data"],
  pro_list:["Unlimited trips","Receipt photos, attached to the PDF","Printable PDF logbook","CSV export for your accountant","One-tap frequent trips","Detailed recoverable tax"],
+ fx_day:"≈ {c} at the {d} rate", fx_approx:"≈ {c} (approximate rate)", fx_note:"Gumroad bills in US dollars. Your bank does the conversion and may add a fee.",
  buy:"Subscribe to Pro", launch:"Launch access: every Pro feature is open while the subscription is being set up.", pro_on:"Pro is active on this device. Thank you!", pro_off:"You're on the free version.",
  lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate Pro", lic_checking:"Checking…", lic_ok:"Pro is activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate Pro.", lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
  bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones. The backup holds your trips, expenses and receipt photos, but not your licence key: keep the Gumroad email to reactivate Pro.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
@@ -291,7 +295,7 @@ function applyStrings(){
   $("sProv").value = S.settings.prov;
   $("freeList").innerHTML = T[S.lang].free_list.map(x=>"<li>"+esc(x.replace("{n}",CONFIG.freeTripsPerMonth))+"</li>").join("");
   $("proList").innerHTML = T[S.lang].pro_list.map(x=>"<li>"+esc(x)+"</li>").join("");
-  $("proPrice").textContent = CONFIG.price[S.lang];
+  renderPrice();
   $("faqList").innerHTML = T[S.lang].faq.map(q=>"<details><summary>"+esc(q[0])+"</summary><p>"+esc(q[1])+"</p></details>").join("");
   $("yr").textContent = new Date().getFullYear();
 }
@@ -485,6 +489,25 @@ function renderPro(){
   $("proState").innerHTML = st; $("proState").style.marginBottom = "14px";
   $("buyBox").innerHTML = configured() && !licenseActive() ? '<a class="btn lane" style="display:inline-block;text-decoration:none" href="'+esc(CONFIG.gumroadUrl)+'" target="_blank" rel="noopener">'+esc(t("buy"))+'</a>' : (configured() ? "" : '<span class="badge">'+esc(S.lang==="fr"?"Bientôt":"Coming soon")+'</span>');
   $("licBox").style.display = configured() && !licenseActive() ? "" : "none";
+}
+/* ---------- prix : dollars US (Gumroad) + équivalent canadien du jour ---------- */
+const FX_KEY = "carnetkm.fx";
+function fxCached(){ try{ const o = JSON.parse(localStorage.getItem(FX_KEY)||"null"); if(o && typeof o.rate==="number" && o.rate>1 && o.rate<2 && okDate(o.date)) return o; }catch(e){} return null; }
+function renderPrice(){
+  const usd = S.lang==="fr" ? new Intl.NumberFormat("fr-CA",{minimumFractionDigits:2,maximumFractionDigits:2}).format(CONFIG.priceUsd)+" $ US" : "US$"+CONFIG.priceUsd.toFixed(2);
+  $("proPrice").textContent = usd;
+  const fx = fxCached(), cad = CONFIG.priceUsd * (fx ? fx.rate : CONFIG.fxDefault);
+  const c = S.lang==="fr" ? new Intl.NumberFormat("fr-CA",{minimumFractionDigits:2,maximumFractionDigits:2}).format(cad)+" $ CA" : "CA$"+cad.toFixed(2);
+  const d = fx ? (()=>{ const [y,m,dd] = fx.date.split("-"); return new Date(+y,+m-1,+dd).toLocaleDateString(loc(),{day:"numeric",month:"short",year:"numeric"}); })() : "";
+  $("proCad").textContent = fx ? t("fx_day",{c,d}) : t("fx_approx",{c});
+  $("proFxNote").textContent = t("fx_note");
+}
+async function refreshFx(){
+  const fx = fxCached(); if(fx && Date.now() - (fx.at||0) < 6*36e5) return;
+  try{ const r = await fetch(CONFIG.fxUrl,{cache:"no-store"}); if(!r.ok) return; const j = await r.json();
+    const rate = j && j.rates && +j.rates.CAD; if(!(rate>1 && rate<2) || !okDate(j.date)) return;
+    localStorage.setItem(FX_KEY, JSON.stringify({rate, date:j.date, at:Date.now()})); renderPrice();
+  }catch(e){}
 }
 function renderAll(){ applyStrings(); setEditUI(); renderDay(); renderTrips(); renderExp(); renderSum(); renderHero(); renderPro(); expHint(); renderRcPreview(); }
 function flash(el, cls, text){ el.innerHTML = '<div class="msg '+cls+'">'+esc(text)+'</div>'; if(cls==="ok") setTimeout(()=>{ if(el.firstChild && el.firstChild.classList.contains("ok")) el.innerHTML=""; }, 3500); }
@@ -692,7 +715,7 @@ function init(){
       }catch(e){ flash($("bkMsg"),"err",t("bk_bad")); } ev.target.value=""; };
     rd.readAsText(f);
   });
-  recheck();
+  recheck(); refreshFx();
   rcLoadKeys().then(()=>{ renderExp(); });
   if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 }
