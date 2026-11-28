@@ -9,7 +9,7 @@ const CONFIG = {
   fxDefault: 1.42,                                 // taux de secours si le service ne répond pas
   freeTripsPerMonth: 12,
   // Offre bundle (boutique) : produit Gumroad à achat unique « CarnetKM Pro – 3 mois ». Vide = offre désactivée.
-  trialProductId: "",
+  trialProductId: "I8J8z95Rh2C1NEKmF2uRag==",   // CarnetKM Pro – 3 mois offerts (sharplaughs.gumroad.com/l/tiaqnu)
   trialDays: 90
 };
 
