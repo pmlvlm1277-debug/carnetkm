@@ -7,7 +7,10 @@ const CONFIG = {
   priceUsd: 3.49,                                  // prix réel de l'abonnement sur Gumroad (facturé en dollars US)
   fxUrl: "https://api.frankfurter.dev/v1/latest?base=USD&symbols=CAD",   // taux de la Banque centrale européenne, mis à jour chaque jour ouvrable
   fxDefault: 1.42,                                 // taux de secours si le service ne répond pas
-  freeTripsPerMonth: 12
+  freeTripsPerMonth: 12,
+  // Offre bundle (boutique) : produit Gumroad à achat unique « CarnetKM Pro – 3 mois ». Vide = offre désactivée.
+  trialProductId: "",
+  trialDays: 90
 };
 
 /* ---------- i18n ---------- */
@@ -40,7 +43,8 @@ fr:{
  pro_list:["Trajets illimités","Photo des reçus, jointe au PDF","Registre imprimable en PDF","Export CSV pour ton comptable","Trajets fréquents en un clic","Taxes récupérables détaillées"],
  fx_day:"≈ {c} au taux du {d}", fx_approx:"≈ {c} (taux approximatif)", fx_note:"Gumroad facture en dollars américains. Ta banque fait la conversion et peut ajouter des frais.",
  buy:"S'abonner à Pro", launch:"Accès de lancement : toutes les fonctions Pro sont ouvertes pendant que l'abonnement se met en place.", pro_on:"Pro est actif sur cet appareil. Merci!", pro_off:"Tu utilises la version gratuite.",
- lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer Pro", lic_checking:"Vérification…", lic_ok:"Pro est activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour réactiver Pro.", lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
+ lic_h:"Tu es déjà abonné?", lic_l:"Clé de licence reçue par courriel", lic_b:"Activer Pro", lic_checking:"Vérification…", lic_ok:"Pro est activé.", lic_bad:"Cette clé n'est pas valide pour CarnetKM.", lic_ended:"Cet abonnement est terminé. Réabonne-toi pour réactiver Pro.", lic_trial_on:"Pro est actif jusqu'au {d} : tes 3 mois offerts avec ton bundle.", lic_trial_over:"Tes 3 mois offerts sont terminés. Abonne-toi pour garder Pro.", lic_trial_keep:"Pour garder Pro après cette date, abonne-toi :",
+ lic_net:"Impossible de joindre le serveur de licences. Vérifie ta connexion et réessaie.", lic_empty:"Colle ta clé de licence.", lic_remove:"Retirer la clé de cet appareil",
  bk_h:"Tes données", bk_p:"Tout reste dans le navigateur de cet appareil. Fais une sauvegarde de temps en temps, surtout avant de changer de téléphone. La sauvegarde contient tes trajets, tes dépenses et les photos de tes reçus, mais pas ta clé de licence : garde le courriel de Gumroad pour réactiver Pro.", bk_save:"Sauvegarder mes données", bk_load:"Restaurer une sauvegarde", bk_ok:"Sauvegarde restaurée.", bk_bad:"Ce fichier n'est pas une sauvegarde CarnetKM.", bk_confirm:"Remplacer les données de cet appareil par celles de la sauvegarde?", bk_yes:"Remplacer", bk_no:"Annuler",
  faq_h:"Questions fréquentes",
  day_h:"Ma journée", day_p:"Le matin, entre l'odomètre en partant. Le soir, entre celui à l'arrivée : le trajet se crée tout seul.",
@@ -92,7 +96,8 @@ en:{
  pro_list:["Unlimited trips","Receipt photos, attached to the PDF","Printable PDF logbook","CSV export for your accountant","One-tap frequent trips","Detailed recoverable tax"],
  fx_day:"≈ {c} at the {d} rate", fx_approx:"≈ {c} (approximate rate)", fx_note:"Gumroad bills in US dollars. Your bank does the conversion and may add a fee.",
  buy:"Subscribe to Pro", launch:"Launch access: every Pro feature is open while the subscription is being set up.", pro_on:"Pro is active on this device. Thank you!", pro_off:"You're on the free version.",
- lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate Pro", lic_checking:"Checking…", lic_ok:"Pro is activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate Pro.", lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
+ lic_h:"Already subscribed?", lic_l:"Licence key from your email receipt", lic_b:"Activate Pro", lic_checking:"Checking…", lic_ok:"Pro is activated.", lic_bad:"This key isn't valid for CarnetKM.", lic_ended:"This subscription has ended. Subscribe again to reactivate Pro.", lic_trial_on:"Pro is active until {d}: your 3 free months with your bundle.", lic_trial_over:"Your 3 free months are over. Subscribe to keep Pro.", lic_trial_keep:"To keep Pro after that date, subscribe:",
+ lic_net:"Can't reach the licence server. Check your connection and try again.", lic_empty:"Paste your licence key.", lic_remove:"Remove the key from this device",
  bk_h:"Your data", bk_p:"Everything stays in this device's browser. Save a backup now and then, especially before switching phones. The backup holds your trips, expenses and receipt photos, but not your licence key: keep the Gumroad email to reactivate Pro.", bk_save:"Back up my data", bk_load:"Restore a backup", bk_ok:"Backup restored.", bk_bad:"This file isn't a CarnetKM backup.", bk_confirm:"Replace this device's data with the backup?", bk_yes:"Replace", bk_no:"Cancel",
  faq_h:"Common questions",
  day_h:"My day", day_p:"In the morning, enter the odometer as you leave. At night, enter it when you're back: the trip is created for you.",
@@ -166,7 +171,9 @@ function sanitizeState(o, keepNullLang){
 }
 function sanitizeLicense(L){
   if(!L || typeof L!=="object" || typeof L.key!=="string" || !L.key.trim()) return null;
-  return {key:L.key.trim().slice(0,100), ok:L.ok===true, verifiedAt:(typeof L.verifiedAt==="number" && isFinite(L.verifiedAt)) ? L.verifiedAt : 0};
+  const trial = L.kind==="trial";
+  return {key:L.key.trim().slice(0,100), ok:L.ok===true, verifiedAt:(typeof L.verifiedAt==="number" && isFinite(L.verifiedAt)) ? L.verifiedAt : 0,
+          kind:trial?"trial":"sub", until:(trial && typeof L.until==="number" && isFinite(L.until)) ? L.until : 0};
 }
 // Sauvegarde exportée : tout sauf la licence (la clé reste sur cet appareil).
 function exportState(){ const o = JSON.parse(JSON.stringify(S)); delete o.license; return o; }
@@ -230,8 +237,10 @@ const LIC_GRACE = 14*864e5, LIC_RECHECK = 3*864e5, CLOCK_SKEW = 5*60e3;
 function validStamp(v){ return typeof v==="number" && isFinite(v) && v > 0 && v <= Date.now() + CLOCK_SKEW; }
 function licenseActive(){
   const L = S.license; if(!L || L.ok!==true || !validStamp(L.verifiedAt)) return false;
+  if(L.kind==="trial" && !(L.until > Date.now())) return false;   // 3 mois offerts : s'arrête à la date de fin
   return (Date.now() - L.verifiedAt) < LIC_GRACE;
 }
+function trialOver(){ const L = S.license; return !!(L && L.kind==="trial" && L.ok===true && !(L.until > Date.now())); }
 function isPro(){ return !configured() || licenseActive(); }
 
 /* ---------- calculations ---------- */
@@ -484,11 +493,14 @@ function renderHero(){
 function renderPro(){
   let st;
   if(!configured()) st = '<div class="msg ok">'+esc(t("launch"))+'</div>';
+  else if(licenseActive() && S.license.kind==="trial") st = '<div class="msg ok">'+esc(t("lic_trial_on",{d:new Date(S.license.until).toLocaleDateString(loc(),{day:"numeric",month:"long",year:"numeric"})}))+' '+esc(t("lic_trial_keep"))+'</div>';
+  else if(trialOver()) st = '<div class="msg warn">'+esc(t("lic_trial_over"))+'</div>';
   else if(licenseActive()) st = '<div class="msg ok">'+esc(t("pro_on"))+' <button class="del" type="button" id="licRm" style="display:inline;margin-left:8px">'+esc(t("lic_remove"))+'</button></div>';
   else st = '<div class="msg warn">'+esc(t("pro_off"))+'</div>';
   $("proState").innerHTML = st; $("proState").style.marginBottom = "14px";
-  $("buyBox").innerHTML = configured() && !licenseActive() ? '<a class="btn lane" style="display:inline-block;text-decoration:none" href="'+esc(CONFIG.gumroadUrl)+'" target="_blank" rel="noopener">'+esc(t("buy"))+'</a>' : (configured() ? "" : '<span class="badge">'+esc(S.lang==="fr"?"Bientôt":"Coming soon")+'</span>');
-  $("licBox").style.display = configured() && !licenseActive() ? "" : "none";
+  const onTrial = licenseActive() && S.license.kind==="trial";
+  $("buyBox").innerHTML = configured() && (!licenseActive() || onTrial) ? '<a class="btn lane" style="display:inline-block;text-decoration:none" href="'+esc(CONFIG.gumroadUrl)+'" target="_blank" rel="noopener">'+esc(t("buy"))+'</a>' : (configured() ? "" : '<span class="badge">'+esc(S.lang==="fr"?"Bientôt":"Coming soon")+'</span>');
+  $("licBox").style.display = configured() && (!licenseActive() || onTrial) ? "" : "none";
 }
 /* ---------- prix : dollars US (Gumroad) + équivalent canadien du jour ---------- */
 const FX_KEY = "carnetkm.fx";
@@ -599,8 +611,8 @@ async function printLog(){
 //          | {ok:false, transient:true} (réseau, HTTP 408/429/5xx, réponse non JSON ou illisible) : ne retire jamais Pro.
 // Compteur « uses » (C3) : Gumroad compte les vérifications faites avec increment_uses_count=true, pas les appareils
 // distincts, et n'applique aucun plafond lui-même. Le compteur n'est donc pas utilisé pour bloquer (aucun plafond fiable possible côté client).
-async function verifyLicense(key, first){
-  const body = new URLSearchParams({product_id:CONFIG.gumroadProductId, license_key:key, increment_uses_count:first?"true":"false"});
+async function verifyLicense(key, first, trial){
+  const body = new URLSearchParams({product_id:trial?CONFIG.trialProductId:CONFIG.gumroadProductId, license_key:key, increment_uses_count:first?"true":"false"});
   let r;
   try{ r = await fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",body,cache:"no-store"}); }
   catch(e){ return {ok:false, transient:true}; }
@@ -611,6 +623,11 @@ async function verifyLicense(key, first){
   const p = j.purchase||{}; const past = d => d && new Date(d).getTime() <= Date.now();
   if(p.refunded || p.chargebacked || p.disputed) return {ok:false, reason:"ended"};
   if(past(p.subscription_ended_at) || past(p.subscription_cancelled_at) || past(p.subscription_failed_at)) return {ok:false, reason:"ended"};
+  if(trial){   // la date de fin vient de la date d'achat enregistrée chez Gumroad, pas de l'appareil
+    const bought = new Date(p.sale_timestamp || p.created_at).getTime();
+    if(!isFinite(bought)) return {ok:false, transient:true};
+    return {ok:true, until: bought + CONFIG.trialDays*864e5};
+  }
   return {ok:true};
 }
 async function activate(){
@@ -618,8 +635,10 @@ async function activate(){
   if(!key) return flash(m,"err",t("lic_empty"));
   flash(m,"warn",t("lic_checking")); $("bLic").disabled = true;
   try{
-    const r = await verifyLicense(key, true);
-    if(r.ok){ S.license = {key:key.slice(0,100), ok:true, verifiedAt:Date.now()}; save(); renderAll(); flash($("proState"),"ok",t("lic_ok")); }
+    let r = await verifyLicense(key, true), trial = false;
+    if(!r.ok && !r.transient && r.reason==="bad" && CONFIG.trialProductId){ const r2 = await verifyLicense(key, true, true); if(r2.ok || r2.transient || r2.reason!=="bad"){ r = r2; trial = true; } }
+    if(r.ok && trial && !(r.until > Date.now())){ S.license = {key:key.slice(0,100), ok:true, verifiedAt:Date.now(), kind:"trial", until:r.until}; save(); m.innerHTML = ""; renderAll(); }
+    else if(r.ok){ S.license = {key:key.slice(0,100), ok:true, verifiedAt:Date.now(), kind:trial?"trial":"sub", until:trial?r.until:0}; save(); m.innerHTML = ""; renderAll(); if(!trial) flash($("proState"),"ok",t("lic_ok")); }
     else if(r.transient) flash(m,"err",t("lic_net"));
     else flash(m,"err",t(r.reason==="ended"?"lic_ended":"lic_bad"));
   }catch(e){ flash(m,"err",t("lic_net")); }
@@ -630,9 +649,9 @@ async function recheck(){
   // Une date invalide ou future force la revérification; sinon on attend le délai habituel.
   if(validStamp(L.verifiedAt) && Date.now() - L.verifiedAt < LIC_RECHECK) return;
   try{
-    const r = await verifyLicense(L.key,false);
+    const r = await verifyLicense(L.key, false, L.kind==="trial");
     if(r.transient) return;                       // erreur passagère : on garde la dernière validation (la grâce de 14 jours s'applique)
-    L.ok = r.ok; if(r.ok) L.verifiedAt = Date.now(); save(); renderAll();
+    L.ok = r.ok; if(r.ok){ L.verifiedAt = Date.now(); if(L.kind==="trial") L.until = r.until; } save(); renderAll();
   }catch(e){}
 }
 
